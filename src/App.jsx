@@ -1,9 +1,12 @@
-
+import { Outlet } from "react-router";
+import { Header, Footer } from "./components/index";
 function App() {
 
   return (
     <>
-      <div className="text-5xl text-red-700">Game Zone</div>
+     <Header />
+     <Outlet/>
+     <Footer />
     </>
   )
 }
