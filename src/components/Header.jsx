@@ -37,9 +37,9 @@ function Header() {
           </label>
         </div>
         <div className='h-auto w-[12%] min-w-28'>
-          <NavLink to='/'><img src="/logo.png" /></NavLink>
+          <NavLink to='/'><img src="https://res.cloudinary.com/dqznmhhtv/image/upload/v1735804555/logo_vmlvzg.png" /></NavLink>
         </div>
-        <div onClick={()=>setIsSidebarOpen(!isSidebarOpen)} className={`h-screen w-5/6 absolute top-16 -left-2 bg-black bg-opacity-9 text-white backdrop:blur-sm md:hidden  ${isSidebarOpen?"":"-translate-x-full"} duration-700`}>
+        <div onClick={()=>setIsSidebarOpen(!isSidebarOpen)} className={`h-screen w-5/6 absolute top-16 z-20 -left-2 bg-black bg-opacity-9 text-white backdrop:blur-sm md:hidden  ${isSidebarOpen?"":"-translate-x-full"} duration-700`}>
           < NavBar/>
         </div>
         <div className='h-12 w-1/3 hidden md:block'>
