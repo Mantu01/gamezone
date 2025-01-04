@@ -18,8 +18,8 @@ const gameZoneSlice=createSlice({
   name:"gameZone",
   initialState,
   reducers:{
-    setMatchStarted:(state,action)=>{
-      state.matchStarted=action.payload;
+    toggleMatchStarted:(state)=>{
+      state.matchStarted=!state.matchStarted;
     },
     toggleFullScreen:(state)=>{
       state.isFullScreen=!state.isFullScreen;
@@ -49,6 +49,6 @@ const gameZoneSlice=createSlice({
   },
 });
 
-export const {setUserData,setLevel,setOnlineMode,toggleMusic,toggleSound,setWithAI,setMatchStarted,toggleFullScreen,setSelectedGame}=gameZoneSlice.actions;
+export const {setUserData,setLevel,setOnlineMode,toggleMusic,toggleSound,setWithAI,toggleMatchStarted,toggleFullScreen,setSelectedGame}=gameZoneSlice.actions;
 
 export default gameZoneSlice.reducer;

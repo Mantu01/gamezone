@@ -6,7 +6,7 @@ import { BiSolidLike,BiSolidDislike } from 'react-icons/bi';
 import { useEffect, useRef, useState } from 'react';
 import { ImCross } from 'react-icons/im';
 import { useDispatch, useSelector } from 'react-redux';
-import { setLevel, setMatchStarted, setOnlineMode, setWithAI, toggleFullScreen } from '../features/gameZoneSlice';
+import { setLevel, setOnlineMode, setWithAI, toggleFullScreen, toggleMatchStarted } from '../features/gameZoneSlice';
 
 function GameField({ children }) {
 
@@ -78,7 +78,7 @@ function GameField({ children }) {
           <div className='h-[20%] w-full flex text-3xl flex-row items-end justify-center'>
             <button onClick={()=>{
               setIsInfoOpen(!isInfoOpen);
-              dispatch(setMatchStarted(true));
+              dispatch(toggleMatchStarted());
             }} className='h-16 w-40 border-2 border-black rounded-3xl bg-blue-600 font-bold active:scale-95'>START</button>
           </div>
         </div>
