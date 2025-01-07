@@ -5,10 +5,10 @@ function checkWinner(board) {
   for (let i = 0; i < winPatterns.length; i++) {
     const [a, b, c] = winPatterns[i];
     if (board[a][0] && board[a][0] === board[b][0] && board[a][0] === board[c][0]) {
-      return true;
+      return [true,[a, b, c]];
     }
   }
-  return null;
+  return [false,[]];
 };
 
 function easyLevel(board) {

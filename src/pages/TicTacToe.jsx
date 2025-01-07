@@ -1,7 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
-import { enableBoard, markBoard, resetBoard } from "../features/TicTacToeSlice";
+import { disableBoard, enableBoard, markBoard, resetBoard } from "../features/TicTacToeSlice";
 import { useEffect, useState } from "react";
-import { checkWinner } from "../games/TicTacToe";
+import { checkWinner } from "../games/TicTacToe.js";
+import { setMatchStarted } from "../features/gameZoneSlice.js";
 
 
 function TicTacToe() {
@@ -11,17 +12,22 @@ function TicTacToe() {
   const {board}=useSelector(state=>state.TicTacToe);
   const dispatch=useDispatch();
   const {matchStarted,isFullScreen}=useSelector(state=>state.gameZone);
+  const [winPattern,setWinPattern] = useState([]);
 
   useEffect(()=>{
     if(matchStarted){
       dispatch(enableBoard());
     }else{
-      dispatch(resetBoard());
+      dispatch(disableBoard());
     }
   },[matchStarted]);
 
   useEffect(()=>{
-    
+    let checWin=checkWinner(board);
+    if(checWin[0]){
+      setWinPattern(checWin[1]);
+      dispatch(setMatchStarted('finished'));
+    }
   },[board]);
   
   return (

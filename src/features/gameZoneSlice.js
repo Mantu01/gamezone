@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { allGames } from "../utils/games";
 
 const initialState={
-  matchStarted: false,
+  matchStarted: 'notStarted',
   isFullScreen:false,
   selectedGame:null,
   otherGames:null,
@@ -18,8 +18,8 @@ const gameZoneSlice=createSlice({
   name:"gameZone",
   initialState,
   reducers:{
-    toggleMatchStarted:(state)=>{
-      state.matchStarted=!state.matchStarted;
+    setUserDataMatchStarted:(state,action)=>{
+      state.matchStarted=action.payload;
     },
     toggleFullScreen:(state)=>{
       state.isFullScreen=!state.isFullScreen;
@@ -49,6 +49,6 @@ const gameZoneSlice=createSlice({
   },
 });
 
-export const {setUserData,setLevel,setOnlineMode,toggleMusic,toggleSound,setWithAI,toggleMatchStarted,toggleFullScreen,setSelectedGame}=gameZoneSlice.actions;
+export const {setUserData,setLevel,setOnlineMode,toggleMusic,toggleSound,setWithAI,setMatchStarted,toggleFullScreen,setSelectedGame}=gameZoneSlice.actions;
 
 export default gameZoneSlice.reducer;
