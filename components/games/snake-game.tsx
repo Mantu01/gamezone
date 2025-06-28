@@ -12,8 +12,8 @@ interface Position {
   y: number
 }
 
-const GRID_SIZE = 20
-const CANVAS_SIZE = 400
+const GRID_SIZE = 15
+const CANVAS_SIZE = 600
 
 export function SnakeGame({ isPaused, onGameOver }: SnakeGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -22,7 +22,7 @@ export function SnakeGame({ isPaused, onGameOver }: SnakeGameProps) {
   const [direction, setDirection] = useState<Position>({ x: 0, y: -1 })
   const [gameOver, setGameOver] = useState(false)
   const [score, setScore] = useState(0)
-  const gameLoopRef = useRef<NodeJS.Timeout>()
+  const gameLoopRef = useRef<NodeJS.Timeout>(null)
 
   const generateFood = useCallback(() => {
     const newFood = {

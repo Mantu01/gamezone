@@ -2,14 +2,19 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
+import { Navigation } from "@/components/layout/navigation"
+import Providers from "@/context"
+import AuthWrapper from "@/components/wraper/AuthWraper"
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "GameZone - Futuristic Gaming Hub",
-  description: "A cyberpunk-themed gaming website for casual multiplayer and single-player games",
-    generator: 'v0.dev'
+  title: "GameZone",
+  description: "A gaming website for casual multiplayer and single-player games",
+  icons:{
+    icon:'https://res.cloudinary.com/dqznmhhtv/image/upload/v1750864879/unnamed_zp1hwu.png'
+  }
 }
 
 export default function RootLayout({
@@ -20,9 +25,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange={false}>
-          {children}
-        </ThemeProvider>
+        <Providers>
+          <Toaster/>
+          <Navigation/>
+          <AuthWrapper>
+            {children}
+          </AuthWrapper>
+        </Providers>
       </body>
     </html>
   )

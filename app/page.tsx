@@ -7,16 +7,20 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
+import { useUser } from "@/context/UserContext"
 
 export default function UsernameEntry() {
-  const [username, setUsername] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [name,setName]=useState<string>('')
   const router = useRouter()
 
+  const { setUsername } = useUser()
+
   const handleStart = () => {
-    if (username.trim()) {
+    if (name.trim()) {
       setIsLoading(true)
-      localStorage.setItem("gamezone-username", username.trim())
+      setUsername(name.trim())
+      localStorage.setItem("gamezone-username", name.trim())
       setTimeout(() => {
         router.push("/home")
       }, 1000)
@@ -32,22 +36,25 @@ export default function UsernameEntry() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black circuit-bg flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 via-transparent to-orange-500/10"></div>
-
       <Card className="cyber-card p-8 w-full max-w-md relative z-10">
         <div className="text-center space-y-6">
           <div className="space-y-2">
-            <h1 className="text-4xl font-bold text-green-400 neon-text">GAMEZONE</h1>
+            <h1 className="text-4xl font-bold">
+              <span className="text-green-400 neon-text">Game</span>
+              <span className="text-orange-400 neon-text">Zone</span>
+            </h1>
             <p className="text-orange-400 text-lg">Enter the Gaming Arena</p>
           </div>
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-green-300 text-sm font-medium">PLAYER IDENTIFICATION</label>
+              <label className="text-green-300 text-sm font-medium">PLAYER NAME</label>
               <Input
+                key='name'
                 type="text"
-                placeholder="Enter your username..."
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter your name..."
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 onKeyPress={handleKeyPress}
                 className="cyber-input text-white placeholder:text-gray-400 h-12 text-center text-lg"
                 maxLength={20}
@@ -56,7 +63,7 @@ export default function UsernameEntry() {
 
             <Button
               onClick={handleStart}
-              disabled={!username.trim() || isLoading}
+              disabled={!name.trim() || isLoading}
               className="cyber-button w-full h-12 text-black font-bold text-lg"
             >
               {isLoading ? (
@@ -65,7 +72,7 @@ export default function UsernameEntry() {
                   <span>INITIALIZING...</span>
                 </div>
               ) : (
-                "ENTER GAMEZONE"
+                "Enter GameZone"
               )}
             </Button>
           </div>

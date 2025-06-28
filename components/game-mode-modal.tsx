@@ -57,7 +57,7 @@ export function GameModeModal({ isOpen, onClose, gameId, gameName, isMultiplayer
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="cyber-card border-green-400/50 max-w-md">
+      <DialogContent className=" border-green-400/50 max-w-md">
         <DialogHeader>
           <DialogTitle className="text-green-400 text-center text-xl">{gameName}</DialogTitle>
         </DialogHeader>

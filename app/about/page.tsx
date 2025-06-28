@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Navigation } from "@/components/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Github, Globe, Mail, Code } from "lucide-react"
 
@@ -21,7 +20,7 @@ export default function AboutPage() {
 
   if (!username) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="h-[105vh] bg-black flex items-center justify-center">
         <div className="text-green-400">Loading...</div>
       </div>
     )
@@ -29,8 +28,6 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black dark:from-black dark:via-gray-900 dark:to-black light:from-gray-100 light:via-gray-50 light:to-gray-200 circuit-bg">
-      <Navigation />
-
       <main className="container mx-auto px-4 pt-24 pb-8">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-6xl font-bold text-green-400 neon-text mb-4">About GameZone</h1>

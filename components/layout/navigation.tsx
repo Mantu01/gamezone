@@ -5,29 +5,26 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { Menu, X, Home, Gamepad2, Info, HelpCircle, LogOut } from "lucide-react"
+import { Menu, X, LogOut } from "lucide-react"
 import Image from "next/image"
+import { useUser } from "@/context/UserContext"
+import { navItems } from "@/lib/constants/navItems"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
+  const {setUsername}=useUser();
 
   const handleLogout = () => {
     localStorage.removeItem("gamezone-username")
+    setUsername('');
     router.push("/")
   }
 
-  const navItems = [
-    { href: "/home", label: "Home", icon: Home },
-    { href: "/games", label: "All Games", icon: Gamepad2 },
-    { href: "/about", label: "About", icon: Info },
-    { href: "/help", label: "Help", icon: HelpCircle },
-  ]
-
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 nav-bg bg-black/90 backdrop-blur-md border-b border-green-400/30">
-      <div className="container mx-auto px-4">
+      <div className=" mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/home" className="flex items-center space-x-2">
@@ -64,12 +61,14 @@ export function Navigation() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <ThemeToggle />
+            <div className="h-9 w-16 rounded-md px-3">
+              <ThemeToggle/>
+            </div>
             <Button
               onClick={handleLogout}
-              variant="outline"
+              variant="ghost"
               size="sm"
-              className="border-red-400 text-red-400 hover:bg-red-400 hover:text-black"
+              className="border-orange-400 text-green-400 hover:bg-orange-400 hover:text-black"
             >
               <LogOut className="w-4 h-4 mr-2" />
               Exit
@@ -114,9 +113,9 @@ export function Navigation() {
               })}
               <Button
                 onClick={handleLogout}
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                className="w-full mt-4 border-red-400 text-red-400 hover:bg-red-400 hover:text-black"
+                className="w-full mt-4 border-orange-400 text-orange-400 hover:bg-orange-400 hover:text-black"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Exit GameZone

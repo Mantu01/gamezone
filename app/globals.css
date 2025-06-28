@@ -139,7 +139,6 @@
 .cyber-card:hover {
   border-color: rgba(34, 197, 94, 0.8);
   box-shadow: 0 0 30px rgba(34, 197, 94, 0.3);
-  transform: translateY(-5px);
 }
 
 .cyber-button {

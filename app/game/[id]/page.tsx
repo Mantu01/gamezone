@@ -2,96 +2,35 @@
 
 import { useState, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
-import { Navigation } from "@/components/navigation"
 import { GameModeModal } from "@/components/game-mode-modal"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ArrowLeft, Play, Users, User, Zap } from "lucide-react"
-
-const gameDetails = {
-  snake: {
-    name: "Cyber Snake",
-    description:
-      "Navigate through the digital maze and consume data packets to grow your cyber snake. Avoid colliding with walls or your own tail in this classic arcade experience with a cyberpunk twist.",
-    icon: "🐍",
-    difficulty: "Medium",
-    players: "Single Player",
-    features: ["Neon graphics", "Power-ups", "High scores", "Multiple levels"],
-  },
-  tictactoe: {
-    name: "Neural Tic-Tac-Toe",
-    description:
-      "Strategic grid combat simulation where you battle against AI opponents or challenge other players in real-time matches.",
-    icon: "⚡",
-    difficulty: "Easy",
-    players: "Multiplayer",
-    features: ["AI opponents", "Online multiplayer", "Tournament mode", "Statistics tracking"],
-  },
-  rps: {
-    name: "Quantum RPS",
-    description:
-      "Rock Paper Scissors enhanced with quantum mechanics and cyber elements. Predict your opponent's moves in this fast-paced battle.",
-    icon: "✂️",
-    difficulty: "Easy",
-    players: "Multiplayer",
-    features: ["Quantum effects", "Best of series", "Power moves", "Leaderboards"],
-  },
-  chess: {
-    name: "Digital Chess",
-    description:
-      "Advanced tactical warfare on a holographic chessboard. Master the art of strategy in this timeless game with futuristic visuals.",
-    icon: "♛",
-    difficulty: "Hard",
-    players: "Multiplayer",
-    features: ["3D board", "AI analysis", "Move history", "Time controls"],
-  },
-  hanoi: {
-    name: "Tower of Hanoi",
-    description:
-      "Solve the ancient puzzle by moving disks between towers. Only smaller disks can be placed on larger ones.",
-    icon: "🗼",
-    difficulty: "Medium",
-    players: "Single Player",
-    features: ["Multiple difficulty levels", "Move counter", "Timer", "Hints"],
-  },
-}
+import { useUser } from "@/context/UserContext"
+import Loading from "@/components/wraper/Loading"
+import { gameDetails } from "@/lib/constants/gameDetails"
 
 export default function GamePage() {
-  const [username, setUsername] = useState("")
   const [showModeModal, setShowModeModal] = useState(false)
   const router = useRouter()
   const params = useParams()
   const gameId = params.id as string
+  const {username}=useUser();
 
   const game = gameDetails[gameId as keyof typeof gameDetails]
 
-  useEffect(() => {
-    const storedUsername = localStorage.getItem("gamezone-username")
-    if (!storedUsername) {
-      router.push("/")
-    } else {
-      setUsername(storedUsername)
-    }
-  }, [router])
-
   if (!username || !game) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-green-400">Loading...</div>
-      </div>
-    )
+    return <Loading/>
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black dark:from-black dark:via-gray-900 dark:to-black light:from-gray-100 light:via-gray-50 light:to-gray-200 circuit-bg">
-      <Navigation />
-
       <main className="container mx-auto px-4 pt-24 pb-8">
         <div className="mb-8">
           <Button
             onClick={() => router.back()}
             variant="outline"
-            className="border-green-400 text-green-400 hover:bg-green-400 hover:text-black mb-6"
+            className="border-green-400 text-green-400 hover:bg-orange-400 hover:text-black mb-6"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back

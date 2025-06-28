@@ -10,7 +10,6 @@ interface Game {
   name: string
   description: string
   icon: string
-  difficulty: string
   players: string
 }
 
@@ -38,10 +37,6 @@ export function GameCard({ game, showDescription = false }: GameCardProps) {
           </div>
 
           <div className="flex justify-center space-x-4 text-xs">
-            <span className="text-orange-400 flex items-center">
-              <Zap className="w-3 h-3 mr-1" />
-              {game.difficulty}
-            </span>
             <span className="text-green-300 flex items-center">
               {game.players === "Single Player" ? (
                 <User className="w-3 h-3 mr-1" />

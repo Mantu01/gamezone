@@ -1,106 +1,26 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Navigation } from "@/components/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronRight } from "lucide-react"
-
-const gameInstructions = {
-  snake: {
-    name: "Cyber Snake",
-    icon: "🐍",
-    instructions: [
-      "Use arrow keys or WASD to control your snake",
-      "Eat data packets (food) to grow longer",
-      "Avoid hitting walls or your own tail",
-      "Score increases with each packet consumed",
-      "Game speed increases as you grow",
-    ],
-    tips: [
-      "Plan your path ahead to avoid trapping yourself",
-      "Use the edges strategically but be careful",
-      "The longer you get, the more challenging it becomes",
-    ],
-  },
-  tictactoe: {
-    name: "Neural Tic-Tac-Toe",
-    icon: "⚡",
-    instructions: [
-      "Click on empty squares to place your mark (X or O)",
-      "Get three marks in a row, column, or diagonal to win",
-      "Take turns with your opponent",
-      "First player is always X",
-      "Game ends in a draw if board is full with no winner",
-    ],
-    tips: [
-      "Control the center square for better positioning",
-      "Block your opponent when they have two in a row",
-      "Create multiple winning opportunities",
-    ],
-  },
-  rps: {
-    name: "Quantum RPS",
-    icon: "✂️",
-    instructions: [
-      "Choose Rock, Paper, or Scissors",
-      "Rock beats Scissors",
-      "Scissors beats Paper",
-      "Paper beats Rock",
-      "Best of 3 or 5 rounds wins the match",
-    ],
-    tips: [
-      "Try to predict your opponent's patterns",
-      "Mix up your choices to stay unpredictable",
-      "Watch for tells in online matches",
-    ],
-  },
-  chess: {
-    name: "Digital Chess",
-    icon: "♛",
-    instructions: [
-      "Click a piece to select it, then click destination",
-      "Each piece has unique movement patterns",
-      "Capture opponent pieces by moving to their square",
-      "Protect your King at all costs",
-      "Checkmate the opponent's King to win",
-    ],
-    tips: [
-      "Control the center of the board early",
-      "Develop your pieces before attacking",
-      "Castle early to protect your King",
-      "Think several moves ahead",
-    ],
-  },
-}
+import { gameDetails } from "@/lib/constants/gameDetails"
+import Loading from "@/components/wraper/Loading"
+import { useUser } from "@/context/UserContext"
 
 export default function HelpPage() {
-  const [username, setUsername] = useState("")
   const [expandedGame, setExpandedGame] = useState<string | null>("snake")
   const router = useRouter()
 
-  useEffect(() => {
-    const storedUsername = localStorage.getItem("gamezone-username")
-    if (!storedUsername) {
-      router.push("/")
-    } else {
-      setUsername(storedUsername)
-    }
-  }, [router])
+  const { username } = useUser()
 
   if (!username) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-green-400">Loading...</div>
-      </div>
-    )
+    return <Loading/>
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black dark:from-black dark:via-gray-900 dark:to-black light:from-gray-100 light:via-gray-50 light:to-gray-200 circuit-bg">
-      <Navigation />
-
       <main className="container mx-auto px-4 pt-24 pb-8">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-6xl font-bold text-green-400 neon-text mb-4">Game Manual</h1>
@@ -148,7 +68,7 @@ export default function HelpPage() {
 
         {/* Game-specific Instructions */}
         <div className="space-y-4">
-          {Object.entries(gameInstructions).map(([gameId, game]) => (
+          {Object.entries(gameDetails).map(([gameId, game]) => (
             <Card key={gameId} className="cyber-card">
               <CardContent className="p-0">
                 <Button

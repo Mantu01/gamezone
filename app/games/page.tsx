@@ -1,102 +1,20 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Navigation } from "@/components/navigation"
+import { useState } from "react"
 import { GameCard } from "@/components/game-card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search, Filter, Users, User } from "lucide-react"
+import { useUser } from "@/context/UserContext"
+import Loading from "@/components/wraper/Loading"
+import { allGames } from "@/lib/constants/allGames"
 
-const allGames = [
-  {
-    id: "snake",
-    name: "Cyber Snake",
-    description: "Navigate through the digital maze and consume data packets to grow your cyber snake.",
-    icon: "🐍",
-    difficulty: "Medium",
-    players: "Single Player",
-  },
-  {
-    id: "tictactoe",
-    name: "Neural Tic-Tac-Toe",
-    description: "Strategic grid combat simulation with AI opponents or human players.",
-    icon: "⚡",
-    difficulty: "Easy",
-    players: "Multiplayer",
-  },
-  {
-    id: "rps",
-    name: "Quantum RPS",
-    description: "Rock Paper Scissors with quantum mechanics and cyber enhancements.",
-    icon: "✂️",
-    difficulty: "Easy",
-    players: "Multiplayer",
-  },
-  {
-    id: "chess",
-    name: "Digital Chess",
-    description: "Advanced tactical warfare on a holographic chessboard.",
-    icon: "♛",
-    difficulty: "Hard",
-    players: "Multiplayer",
-  },
-  {
-    id: "hanoi",
-    name: "Tower of Hanoi",
-    description: "Solve the ancient puzzle by moving disks between towers following specific rules.",
-    icon: "🗼",
-    difficulty: "Medium",
-    players: "Single Player",
-  },
-  {
-    id: "sudoku",
-    name: "Digital Sudoku",
-    description: "Fill the 9x9 grid with numbers so each row, column, and 3x3 box contains all digits 1-9.",
-    icon: "🔢",
-    difficulty: "Hard",
-    players: "Single Player",
-  },
-  {
-    id: "typing",
-    name: "Cyber Typing Test",
-    description: "Test and improve your typing speed with cyberpunk-themed text challenges.",
-    icon: "⌨️",
-    difficulty: "Easy",
-    players: "Single Player",
-  },
-  {
-    id: "memory",
-    name: "Memory Matrix",
-    description: "Match pairs of cards in this classic memory game with a futuristic twist.",
-    icon: "🧠",
-    difficulty: "Medium",
-    players: "Single Player",
-  },
-  {
-    id: "whack",
-    name: "Whack-a-Mole",
-    description: "Test your reflexes by hitting the moles as they pop up from their holes.",
-    icon: "🔨",
-    difficulty: "Easy",
-    players: "Single Player",
-  },
-]
 
 export default function GamesPage() {
-  const [username, setUsername] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [filter, setFilter] = useState("All")
-  const router = useRouter()
-
-  useEffect(() => {
-    const storedUsername = localStorage.getItem("gamezone-username")
-    if (!storedUsername) {
-      router.push("/")
-    } else {
-      setUsername(storedUsername)
-    }
-  }, [router])
+  
+  const {username}=useUser();
 
   const filteredGames = allGames.filter((game) => {
     const matchesSearch =
@@ -110,17 +28,11 @@ export default function GamesPage() {
   })
 
   if (!username) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-green-400">Loading...</div>
-      </div>
-    )
+    return <Loading/>
   }
 
   return (
     <div className="min-h-screen main-bg circuit-bg">
-      <Navigation />
-
       <main className="container mx-auto px-4 pt-24 pb-8">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-6xl font-bold text-green-400 neon-text mb-4">Game Arsenal</h1>
