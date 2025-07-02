@@ -2,119 +2,75 @@
 
 import { useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
+import { useGame } from "@/context/GameContext"
 
-interface SudokuGameProps {
-  isPaused: boolean
-  onGameOver: () => void
-}
+type Cell = number | null
+type Board = Cell[][]
 
-type SudokuGrid = (number | null)[][]
-
-export function SudokuGame({ isPaused, onGameOver }: SudokuGameProps) {
-  const [grid, setGrid] = useState<SudokuGrid>(() => {
-    const pattern = [
-      [5, 3, null, null, 7, null, null, null, null],
-      [6, null, null, 1, 9, 5, null, null, null],
-      [null, 9, 8, null, null, null, null, 6, null],
-      [8, null, null, null, 6, null, null, null, 3],
-      [4, null, null, 8, null, 3, null, null, 1],
-      [7, null, null, null, 2, null, null, null, 6],
-      [null, 6, null, null, null, null, 2, 8, null],
-      [null, null, null, 4, 1, 9, null, null, 5],
-      [null, null, null, null, 8, null, null, 7, 9],
-    ]
-    return pattern as SudokuGrid
-  })
-
-  const [initialGrid, setInitialGrid] = useState<SudokuGrid>(() => {
-    const pattern = [
-      [5, 3, null, null, 7, null, null, null, null],
-      [6, null, null, 1, 9, 5, null, null, null],
-      [null, 9, 8, null, null, null, null, 6, null],
-      [8, null, null, null, 6, null, null, null, 3],
-      [4, null, null, 8, null, 3, null, null, 1],
-      [7, null, null, null, 2, null, null, null, 6],
-      [null, 6, null, null, null, null, 2, 8, null],
-      [null, null, null, 4, 1, 9, null, null, 5],
-      [null, null, null, null, 8, null, null, 7, 9],
-    ]
-    return pattern as SudokuGrid
-  })
-
-  const [selectedCell, setSelectedCell] = useState<[number, number] | null>(null)
+export function SudokuGame() {
+  const { isPaused } = useGame()
+  const [board, setBoard] = useState<Board>([
+    [5, 3, null, null, 7, null, null, null, null],
+    [6, null, null, 1, 9, 5, null, null, null],
+    [null, 9, 8, null, null, null, null, 6, null],
+    [8, null, null, null, 6, null, null, null, 3],
+    [4, null, null, 8, null, 3, null, null, 1],
+    [7, null, null, null, 2, null, null, null, 6],
+    [null, 6, null, null, null, null, 2, 8, null],
+    [null, null, null, 4, 1, 9, null, null, 5],
+    [null, null, null, null, 8, null, null, 7, 9],
+  ])
+  const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null)
   const [isComplete, setIsComplete] = useState(false)
 
-  const isValidMove = useCallback((grid: SudokuGrid, row: number, col: number, num: number): boolean => {
+  const isValidMove = useCallback((row: number, col: number, num: number): boolean => {
     // Check row
-    for (let x = 0; x < 9; x++) {
-      if (x !== col && grid[row][x] === num) return false
+    for (let c = 0; c < 9; c++) {
+      if (c !== col && board[row][c] === num) return false
     }
 
     // Check column
-    for (let x = 0; x < 9; x++) {
-      if (x !== row && grid[x][col] === num) return false
+    for (let r = 0; r < 9; r++) {
+      if (r !== row && board[r][col] === num) return false
     }
 
     // Check 3x3 box
-    const startRow = row - (row % 3)
-    const startCol = col - (col % 3)
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        const currentRow = startRow + i
-        const currentCol = startCol + j
-        if (currentRow !== row && currentCol !== col && grid[currentRow][currentCol] === num) {
-          return false
-        }
+    const boxRow = Math.floor(row / 3) * 3
+    const boxCol = Math.floor(col / 3) * 3
+    for (let r = boxRow; r < boxRow + 3; r++) {
+      for (let c = boxCol; c < boxCol + 3; c++) {
+        if ((r !== row || c !== col) && board[r][c] === num) return false
       }
     }
 
     return true
-  }, [])
+  }, [board])
 
-  const handleCellClick = useCallback(
-    (row: number, col: number) => {
-      if (isPaused || isComplete || initialGrid[row][col] !== null) return
-      setSelectedCell([row, col])
-    },
-    [isPaused, isComplete, initialGrid],
-  )
+  const handleCellClick = useCallback((row: number, col: number) => {
+    if (isPaused || isComplete) return
+    setSelectedCell({ row, col })
+  }, [isPaused, isComplete])
 
-  const handleNumberInput = useCallback(
-    (num: number) => {
-      if (!selectedCell || isPaused || isComplete) return
-
-      const [row, col] = selectedCell
-      if (initialGrid[row][col] !== null) return
-
-      const newGrid = grid.map((row) => [...row])
-      newGrid[row][col] = num
-
-      setGrid(newGrid)
-
-      // Check if puzzle is complete
-      const isGridComplete = newGrid.every((row) => row.every((cell) => cell !== null))
-      if (isGridComplete) {
-        setIsComplete(true)
-        onGameOver()
-      }
-    },
-    [selectedCell, grid, initialGrid, isPaused, isComplete, onGameOver],
-  )
-
-  const clearCell = useCallback(() => {
+  const handleNumberInput = useCallback((num: number) => {
     if (!selectedCell || isPaused || isComplete) return
 
-    const [row, col] = selectedCell
-    if (initialGrid[row][col] !== null) return
+    const { row, col } = selectedCell
+    if (board[row][col] !== null) return // Don't overwrite initial numbers
 
-    const newGrid = grid.map((row) => [...row])
-    newGrid[row][col] = null
+    if (isValidMove(row, col, num)) {
+      const newBoard = board.map(row => [...row])
+      newBoard[row][col] = num
+      setBoard(newBoard)
 
-    setGrid(newGrid)
-  }, [selectedCell, grid, initialGrid, isPaused, isComplete])
+      // Check if puzzle is complete
+      if (newBoard.every(row => row.every(cell => cell !== null))) {
+        setIsComplete(true)
+      }
+    }
+  }, [selectedCell, board, isPaused, isComplete, isValidMove])
 
   const resetGame = useCallback(() => {
-    const pattern = [
+    setBoard([
       [5, 3, null, null, 7, null, null, null, null],
       [6, null, null, 1, 9, 5, null, null, null],
       [null, 9, 8, null, null, null, null, 6, null],
@@ -124,93 +80,103 @@ export function SudokuGame({ isPaused, onGameOver }: SudokuGameProps) {
       [null, 6, null, null, null, null, 2, 8, null],
       [null, null, null, 4, 1, 9, null, null, 5],
       [null, null, null, null, 8, null, null, 7, 9],
-    ]
-    setGrid(pattern as SudokuGrid)
-    setInitialGrid(pattern as SudokuGrid)
+    ])
     setSelectedCell(null)
     setIsComplete(false)
   }, [])
 
+  const clearCell = useCallback(() => {
+    if (!selectedCell || isPaused || isComplete) return
+
+    const { row, col } = selectedCell
+    const newBoard = board.map(row => [...row])
+    newBoard[row][col] = null
+    setBoard(newBoard)
+  }, [selectedCell, board, isPaused, isComplete])
+
   return (
     <div className="text-center space-y-6">
       <div className="flex justify-between items-center">
-        <div className="text-green-400 font-bold">
-          Selected: {selectedCell ? `${selectedCell[0] + 1},${selectedCell[1] + 1}` : "None"}
-        </div>
+        <div className="text-green-400 font-bold">Sudoku Puzzle</div>
         <div className="text-orange-400 font-bold">
           {isComplete ? "Puzzle Complete!" : isPaused ? "Paused" : "Playing"}
         </div>
       </div>
 
       {/* Sudoku Grid */}
-      <div className="inline-block border-4 border-green-400 rounded-lg overflow-hidden">
-        {grid.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex">
-            {row.map((cell, colIndex) => {
-              const isSelected = selectedCell && selectedCell[0] === rowIndex && selectedCell[1] === colIndex
-              const isInitial = initialGrid[rowIndex][colIndex] !== null
-              const isInThickBorder = (rowIndex + 1) % 3 === 0 && rowIndex !== 8 ? "border-b-2 border-green-400" : ""
-              const isInThickRightBorder =
-                (colIndex + 1) % 3 === 0 && colIndex !== 8 ? "border-r-2 border-green-400" : ""
+      <div className="grid grid-cols-9 gap-0 max-w-md mx-auto border-2 border-green-400/30">
+        {board.map((row, rowIndex) =>
+          row.map((cell, colIndex) => {
+            const isSelected = selectedCell?.row === rowIndex && selectedCell?.col === colIndex
+            const isInitial = board[rowIndex][colIndex] !== null && (
+              rowIndex < 3 || (rowIndex >= 3 && rowIndex < 6) || rowIndex >= 6
+            )
+            const boxRow = Math.floor(rowIndex / 3)
+            const boxCol = Math.floor(colIndex / 3)
+            const isBoxBorder = (boxRow + boxCol) % 2 === 0
 
-              return (
-                <button
-                  key={colIndex}
-                  onClick={() => handleCellClick(rowIndex, colIndex)}
-                  disabled={isPaused || isInitial}
-                  className={`
-                    w-10 h-10 border border-gray-400 text-lg font-bold transition-all duration-200
-                    ${isSelected ? "bg-green-400/20 border-green-400" : ""}
-                    ${isInitial ? "bg-gray-600 text-white" : "bg-gray-800 text-green-400"}
-                    ${isInThickBorder}
-                    ${isInThickRightBorder}
-                    hover:bg-green-400/10 disabled:cursor-not-allowed
-                  `}
-                >
-                  {cell || ""}
-                </button>
-              )
-            })}
-          </div>
-        ))}
+            return (
+              <button
+                key={`${rowIndex}-${colIndex}`}
+                onClick={() => handleCellClick(rowIndex, colIndex)}
+                disabled={isPaused || isInitial}
+                className={`
+                  w-10 h-10 text-lg font-bold border border-gray-600
+                  ${isBoxBorder ? 'bg-gray-800' : 'bg-gray-900'}
+                  ${isSelected ? 'bg-green-400/30 border-green-400' : ''}
+                  ${isInitial ? 'text-green-400 cursor-not-allowed' : 'text-white hover:bg-green-400/20'}
+                  disabled:cursor-not-allowed
+                `}
+              >
+                {cell || ''}
+              </button>
+            )
+          }),
+        )}
       </div>
 
-      {/* Number Input */}
+      {/* Number Pad */}
       <div className="space-y-4">
-        <div className="grid grid-cols-5 gap-2 max-w-xs mx-auto">
+        <div className="text-green-400 font-bold">Enter Numbers</div>
+        <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
             <Button
               key={num}
               onClick={() => handleNumberInput(num)}
-              disabled={!selectedCell || isPaused}
-              className="cyber-button text-black font-bold aspect-square"
+              disabled={isPaused || !selectedCell || isComplete}
+              className="cyber-button text-black font-bold w-12 h-12"
             >
               {num}
             </Button>
           ))}
-          <Button
-            onClick={clearCell}
-            disabled={!selectedCell || isPaused}
-            variant="outline"
-            className="border-red-400 text-red-400 hover:bg-red-400 hover:text-black"
-          >
-            Clear
-          </Button>
         </div>
+        <Button
+          onClick={clearCell}
+          disabled={isPaused || !selectedCell || isComplete}
+          className="cyber-button text-black font-bold"
+        >
+          Clear Cell
+        </Button>
       </div>
 
       {isComplete && (
         <div className="space-y-4">
-          <div className="text-2xl font-bold text-green-400">Puzzle Solved!</div>
+          <div className="text-2xl font-bold text-green-400">Congratulations!</div>
+          <div className="text-lg text-orange-400">Puzzle completed successfully!</div>
           <Button onClick={resetGame} className="cyber-button text-black font-bold">
-            New Puzzle
+            Play Again
           </Button>
         </div>
       )}
 
+      <Button onClick={resetGame} className="cyber-button text-black font-bold">
+        Reset Game
+      </Button>
+
       <div className="text-gray-400 text-sm space-y-1">
-        <p>Fill each row, column, and 3×3 box with digits 1-9</p>
-        <p>Click a cell and then click a number to fill it</p>
+        <p>Click on an empty cell to select it</p>
+        <p>Enter numbers 1-9 to fill the cell</p>
+        <p>Each row, column, and 3x3 box must contain numbers 1-9</p>
       </div>
     </div>
   )

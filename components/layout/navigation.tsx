@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { Menu, X, LogOut } from "lucide-react"
 import Image from "next/image"
 import { useUser } from "@/context/UserContext"
@@ -13,14 +13,7 @@ import { navItems } from "@/lib/constants/navItems"
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
-  const router = useRouter()
-  const {setUsername}=useUser();
-
-  const handleLogout = () => {
-    localStorage.removeItem("gamezone-username")
-    setUsername('');
-    router.push("/")
-  }
+  const {handleLogout}=useUser();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 nav-bg bg-black/90 backdrop-blur-md border-b border-green-400/30">

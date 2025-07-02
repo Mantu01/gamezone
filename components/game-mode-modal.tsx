@@ -1,62 +1,41 @@
 "use client"
 
-import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Wifi, WifiOff, Users, Plus, Copy, Check } from "lucide-react"
+import { useGameMode } from "@/context/GameModeContext"
 
-interface GameModeModalProps {
-  isOpen: boolean
-  onClose: () => void
-  gameId: string
-  gameName: string
-  isMultiplayer: boolean
-}
-
-export function GameModeModal({ isOpen, onClose, gameId, gameName, isMultiplayer }: GameModeModalProps) {
-  const [mode, setMode] = useState<"select" | "offline" | "online" | "create" | "join">("select")
-  const [difficulty, setDifficulty] = useState("")
-  const [roomCode, setRoomCode] = useState("")
-  const [generatedCode, setGeneratedCode] = useState("")
-  const [copied, setCopied] = useState(false)
+export function GameModeModal() {
   const router = useRouter()
-
-  const generateRoomCode = () => {
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase()
-    setGeneratedCode(code)
-    setMode("create")
-  }
-
-  const copyRoomCode = () => {
-    navigator.clipboard.writeText(generatedCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+  const {
+    isOpen,
+    gameId,
+    gameName,
+    isMultiplayer,
+    closeModal,
+    mode,
+    difficulty,
+    roomCode,
+    generatedCode,
+    copied,
+    setMode,
+    setDifficulty,
+    setRoomCode,
+    generateRoomCode,
+    copyRoomCode,
+  } = useGameMode()
 
   const startGame = () => {
     // Redirect to the actual game play page
     router.push(`/play/${gameId}`)
-    onClose()
-  }
-
-  const resetModal = () => {
-    setMode("select")
-    setDifficulty("")
-    setRoomCode("")
-    setGeneratedCode("")
-    setCopied(false)
-  }
-
-  const handleClose = () => {
-    resetModal()
-    onClose()
+    closeModal()
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={closeModal}>
       <DialogContent className=" border-green-400/50 max-w-md">
         <DialogHeader>
           <DialogTitle className="text-green-400 text-center text-xl">{gameName}</DialogTitle>

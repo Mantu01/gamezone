@@ -2,16 +2,13 @@
 
 import { useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
-
-interface TicTacToeGameProps {
-  isPaused: boolean
-  onGameOver: () => void
-}
+import { useGame } from "@/context/GameContext"
 
 type Player = "X" | "O" | null
 type Board = Player[]
 
-export function TicTacToeGame({ isPaused, onGameOver }: TicTacToeGameProps) {
+export function TicTacToeGame() {
+  const { isPaused, onGameOver } = useGame()
   const [board, setBoard] = useState<Board>(Array(9).fill(null))
   const [currentPlayer, setCurrentPlayer] = useState<"X" | "O">("X")
   const [winner, setWinner] = useState<Player>(null)

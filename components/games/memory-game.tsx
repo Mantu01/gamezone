@@ -2,11 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-
-interface MemoryGameProps {
-  isPaused: boolean
-  onGameOver: () => void
-}
+import { useGame } from "@/context/GameContext"
 
 interface Card {
   id: number
@@ -17,7 +13,8 @@ interface Card {
 
 const symbols = ["🚀", "🛸", "🌟", "⚡", "🔥", "💎", "🎯", "🎮"]
 
-export function MemoryGame({ isPaused, onGameOver }: MemoryGameProps) {
+export function MemoryGame() {
+  const { isPaused, onGameOver } = useGame()
   const [cards, setCards] = useState<Card[]>([])
   const [flippedCards, setFlippedCards] = useState<number[]>([])
   const [moves, setMoves] = useState(0)

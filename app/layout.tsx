@@ -6,6 +6,7 @@ import { Navigation } from "@/components/layout/navigation"
 import Providers from "@/context"
 import AuthWrapper from "@/components/wraper/AuthWraper"
 import { Toaster } from "@/components/ui/toaster"
+import AudioPlayer from "@/components/ui/AudioPlayer"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -26,6 +27,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>
+          <AudioPlayer />
           <Toaster/>
           <Navigation/>
           <AuthWrapper>

@@ -4,11 +4,7 @@ import type React from "react"
 
 import { useState, useCallback, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
-
-interface TypingGameProps {
-  isPaused: boolean
-  onGameOver: () => void
-}
+import { useGame } from "@/context/GameContext"
 
 const sampleTexts = [
   "The quick brown fox jumps over the lazy dog. This pangram contains every letter of the alphabet at least once.",
@@ -18,7 +14,8 @@ const sampleTexts = [
   "Space: the final frontier. These are the voyages of the starship Enterprise on a mission to explore strange new worlds.",
 ]
 
-export function TypingGame({ isPaused, onGameOver }: TypingGameProps) {
+export function TypingGame() {
+  const { isPaused, onGameOver } = useGame()
   const [currentText, setCurrentText] = useState(sampleTexts[0])
   const [userInput, setUserInput] = useState("")
   const [startTime, setStartTime] = useState<number | null>(null)
@@ -86,7 +83,7 @@ export function TypingGame({ isPaused, onGameOver }: TypingGameProps) {
 
   const getCharacterClass = (index: number) => {
     if (index < userInput.length) {
-      return userInput[index] === currentText[index] ? "text-green-400 bg-green-400/20" : "text-red-400 bg-red-400/20"
+      return userInput[index] === currentText[index] ? "text-green-400 bg-green-400/20" : "text-green-400 bg-green-400/20"
     } else if (index === currentIndex) {
       return "text-white bg-orange-400/50 animate-pulse"
     }

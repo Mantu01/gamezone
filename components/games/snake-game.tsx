@@ -1,11 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, useRef } from "react"
-
-interface SnakeGameProps {
-  isPaused: boolean
-  onGameOver: () => void
-}
+import { useGame } from "@/context/GameContext"
 
 interface Position {
   x: number
@@ -15,7 +11,8 @@ interface Position {
 const GRID_SIZE = 15
 const CANVAS_SIZE = 600
 
-export function SnakeGame({ isPaused, onGameOver }: SnakeGameProps) {
+export function SnakeGame() {
+  const { isPaused, onGameOver } = useGame()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [snake, setSnake] = useState<Position[]>([{ x: 10, y: 10 }])
   const [food, setFood] = useState<Position>({ x: 15, y: 15 })
@@ -130,7 +127,7 @@ export function SnakeGame({ isPaused, onGameOver }: SnakeGameProps) {
 
     // Draw snake
     snake.forEach((segment, index) => {
-      ctx.fillStyle = index === 0 ? "#22c55e" : "#16a34a"
+      ctx.fillStyle = index === 0 ? "#fb923c" : "#eaa24c"
       ctx.fillRect(segment.x * GRID_SIZE, segment.y * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2)
 
       // Add glow effect
@@ -141,8 +138,8 @@ export function SnakeGame({ isPaused, onGameOver }: SnakeGameProps) {
     })
 
     // Draw food
-    ctx.fillStyle = "#fb923c"
-    ctx.shadowColor = "#fb923c"
+    ctx.fillStyle = "#22c55e"
+    ctx.shadowColor = "#22c55e"
     ctx.shadowBlur = 15
     ctx.fillRect(food.x * GRID_SIZE, food.y * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2)
     ctx.shadowBlur = 0

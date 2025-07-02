@@ -20,7 +20,6 @@ export default function UsernameEntry() {
     if (name.trim()) {
       setIsLoading(true)
       setUsername(name.trim())
-      localStorage.setItem("gamezone-username", name.trim())
       setTimeout(() => {
         router.push("/home")
       }, 1000)

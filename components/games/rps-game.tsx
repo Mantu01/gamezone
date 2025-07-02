@@ -3,11 +3,7 @@
 import { useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-
-interface RPSGameProps {
-  isPaused: boolean
-  onGameOver: () => void
-}
+import { useGame } from "@/context/GameContext"
 
 type Choice = "rock" | "paper" | "scissors" | null
 
@@ -17,7 +13,8 @@ const choices = {
   scissors: { emoji: "✂️", name: "Scissors" },
 }
 
-export function RPSGame({ isPaused }: RPSGameProps) {
+export function RPSGame() {
+  const { isPaused } = useGame()
   const [playerChoice, setPlayerChoice] = useState<Choice>(null)
   const [computerChoice, setComputerChoice] = useState<Choice>(null)
   const [result, setResult] = useState<string>("")
@@ -118,7 +115,7 @@ export function RPSGame({ isPaused }: RPSGameProps) {
         {/* Computer Side */}
         <Card className="cyber-card">
           <CardContent className="p-6">
-            <h3 className="text-red-400 font-bold mb-4">Computer Choice</h3>
+            <h3 className="text-green-400 font-bold mb-4">Computer Choice</h3>
             <div className="text-6xl mb-4">
               {gamePhase === "choosing"
                 ? "❓"

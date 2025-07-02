@@ -158,7 +158,7 @@ export default function HelpPage() {
                 variant="outline"
                 className="border-green-400 text-green-400 hover:bg-green-400 hover:text-black"
               >
-                About CyberPlay
+                About GameZone
               </Button>
               <Button onClick={() => router.push("/games")} className="cyber-button text-black font-bold">
                 Browse Games

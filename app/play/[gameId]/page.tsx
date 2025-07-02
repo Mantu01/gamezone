@@ -1,83 +1,25 @@
 "use client"
 
-import { useState, useCallback, useRef, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ArrowLeft} from "lucide-react"
 import Loading from "@/components/wraper/Loading"
 import { useUser } from "@/context/UserContext"
+import { useGame } from "@/context/GameContext"
 import { allGames } from "@/lib/constants/allGames"
 import { gameDetails } from "@/lib/constants/gameDetails"
 import GameActions from "@/components/layout/GameActions"
 
-
 export default function PlayGamePage() {
-  const [isPaused, setIsPaused] = useState(false)
-  const [gameKey, setGameKey] = useState(0)
-  const [isFullscreen, setIsFullscreen] = useState(false)
-  const [liked, setLiked] = useState<boolean | null>(null)
   const router = useRouter()
   const params = useParams()
-  const containerRef=useRef<HTMLDivElement>(null)
   const gameId = params.gameId as string
-  
-  const {username}=useUser()
+  const { username } = useUser()
+  const { gameKey, containerRef } = useGame()
 
   const game = gameDetails[gameId as keyof typeof gameDetails]
   const otherGames = allGames.filter((g) => g.id !== gameId)
-
-  const handleReset = useCallback(() => {
-    setGameKey((prev) => prev + 1)
-    setIsPaused(false)
-  }, [])
-
-  const togglePause = useCallback(() => {
-    setIsPaused((prev) => !prev)
-  }, [])
-
-  const toggleFullscreen = useCallback(() => {
-    const element= containerRef.current;
-    if (!isFullscreen && element) {
-      element.requestFullscreen?.()
-    } else {
-      document.exitFullscreen?.()
-    }
-    setIsFullscreen(!isFullscreen)
-  }, [isFullscreen])
-
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      const isNowFullscreen = document.fullscreenElement != null;
-      setIsFullscreen(isNowFullscreen);
-    };
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-    };
-}, []);
-
-  const handleLike = useCallback(() => {
-    setLiked(liked === true ? null : true)
-  }, [liked])
-
-  const handleDislike = useCallback(() => {
-    setLiked(liked === false ? null : false)
-  }, [liked])
-
-  const handleShare = useCallback(() => {
-    if (navigator.share) {
-      navigator.share({
-        title: `Play ${game?.name} on GameZone`,
-        text: `Check out this awesome game: ${game?.name}`,
-        url: window.location.href,
-      })
-    } else {
-      navigator.clipboard.writeText(window.location.href)
-      alert("Game link copied to clipboard!")
-    }
-  }, [game])
 
   if (!username || !game) {
     return <Loading/>
@@ -122,20 +64,10 @@ export default function PlayGamePage() {
             <div className="lg:col-span-3 bg">
               <Card className="cyber-card" ref={containerRef}>
                 <CardContent className="p-8">
-                  <GameComponent key={gameKey} isPaused={isPaused} onGameOver={() => setIsPaused(true)} />
+                  <GameComponent key={gameKey} />
                 </CardContent>
               </Card>
-              <GameActions
-                toggleFullscreen={toggleFullscreen}
-                togglePause={togglePause}
-                handleLike={handleLike}
-                handleShare={handleShare}
-                handleDislike={handleDislike}
-                liked={liked}
-                isPaused={isPaused}
-                handleReset={handleReset}
-                isFullscreen={isFullscreen}
-              />
+              <GameActions />
             </div>
 
             {/* Other Games Sidebar */}

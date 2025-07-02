@@ -1,20 +1,21 @@
 import React from 'react'
 import { Button } from '../ui/button'
 import { RotateCcw, Pause, Play, Maximize, Minimize, ThumbsUp, ThumbsDown, Share2 } from "lucide-react"
+import { useGame } from "@/context/GameContext"
 
-interface ActionsProps {
-  handleLike: () => void
-  handleShare: () => void
-  handleDislike: () => void
-  togglePause: () => void
-  liked: boolean | null
-  isPaused: boolean
-  handleReset: () => void
-  toggleFullscreen: () => void
-  isFullscreen: boolean
-}
+function GameActions() {
+  const {
+    handleLike,
+    handleShare,
+    handleDislike,
+    togglePause,
+    liked,
+    isPaused,
+    handleReset,
+    toggleFullscreen,
+    isFullscreen
+  } = useGame();
 
-function GameActions({handleLike,handleShare,handleDislike,togglePause,liked,isPaused,handleReset,toggleFullscreen,isFullscreen}:ActionsProps) {
   return (
     <div className="bg-black/80 backdrop-blur-sm border-b border-green-400/20">
       <div className="container mx-auto px-4">
@@ -42,7 +43,7 @@ function GameActions({handleLike,handleShare,handleDislike,togglePause,liked,isP
               <ThumbsDown className="w-4 h-4" />
             </Button>
             <Button
-              onClick={handleShare}
+              onClick={() => handleShare()}
               variant="outline"
               size="sm"
               className="border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-black"

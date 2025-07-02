@@ -1,9 +1,8 @@
-interface GameProps {
+export interface GameProps {
   id:string
   name:string
   description:string
   icon:string
-  players:string
 }
 
 export const allGames:GameProps[] = [
@@ -12,6 +11,5 @@ export const allGames:GameProps[] = [
     name: "Cyber Snake",
     description: "Classic snake game",
     icon: "🐍",
-    players: "Single Player",
   }
 ]

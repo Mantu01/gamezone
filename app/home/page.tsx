@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation"
 import { allGames } from "@/lib/constants/allGames"
 
 export default function HomePage() {
-  
   const { username } = useUser()
   const router = useRouter()
 
@@ -28,7 +27,7 @@ export default function HomePage() {
             <CardContent className="p-6 text-center">
               <Trophy className="w-8 h-8 text-orange-400 mx-auto mb-2" />
               <h3 className="text-green-300 dark:text-green-300 light:text-green-700 font-bold">Games Available</h3>
-              <p className="text-2xl font-bold text-white dark:text-white light:text-gray-900">9</p>
+              <p className="text-2xl font-bold text-white dark:text-white light:text-gray-900">{allGames.length}</p>
             </CardContent>
           </Card>
 
