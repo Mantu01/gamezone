@@ -23,25 +23,25 @@ export default function HelpPage() {
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black dark:from-black dark:via-gray-900 dark:to-black light:from-gray-100 light:via-gray-50 light:to-gray-200 circuit-bg">
       <main className="container mx-auto px-4 pt-24 pb-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold text-green-400 neon-text mb-4">Game Manual</h1>
-          <p className="text-orange-400 text-lg">Master the digital battlefield</p>
+          <h1 className="text-4xl md:text-6xl font-bold text-orange-400 neon-text mb-4">Game Manual</h1>
+          <p className="text-green-400 text-lg">Master the digital battlefield</p>
         </div>
 
         {/* General Instructions */}
         <Card className="cyber-card mb-8">
           <CardContent className="p-8">
-            <h2 className="text-2xl font-bold text-green-400 mb-4">Getting Started</h2>
+            <h2 className="text-2xl font-bold text-orange-400 mb-4">Getting Started</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-orange-400 font-bold mb-2">Game Modes</h3>
+                <h3 className="text-green-400 font-bold mb-2">Game Modes</h3>
                 <ul className="space-y-2 text-gray-300 dark:text-gray-300 light:text-gray-700">
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
-                    <strong>Online:</strong> Play against other players
+                    <strong>Online : </strong> Play against other players
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
-                    <strong>Offline:</strong> Play against AI or solo
+                    <strong>Offline : </strong> Play against AI or solo
                   </li>
                 </ul>
               </div>
@@ -50,15 +50,19 @@ export default function HelpPage() {
                 <ul className="space-y-2 text-gray-300 dark:text-gray-300 light:text-gray-700">
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
-                    <strong>Easy:</strong> Beginner-friendly
+                    <strong>Easy :</strong> Beginner-friendly
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
-                    <strong>Medium:</strong> Balanced challenge
+                    <strong>Medium :</strong> Balanced challenge
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
-                    <strong>Hard:</strong> Expert level
+                    <strong>Hard :</strong> Expert level
+                  </li>
+                  <li className="flex items-center">
+                    <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
+                    <strong>Impossible :</strong> No win condition, just for fun
                   </li>
                 </ul>
               </div>
@@ -78,7 +82,7 @@ export default function HelpPage() {
                 >
                   <div className="flex items-center">
                     <span className="text-2xl mr-4">{game.icon}</span>
-                    <span className="text-xl font-bold text-green-400">{game.name}</span>
+                    <span className="text-xl font-bold text-orange-400">{game.name}</span>
                   </div>
                   {expandedGame === gameId ? (
                     <ChevronDown className="w-5 h-5 text-orange-400" />
@@ -90,7 +94,7 @@ export default function HelpPage() {
                 {expandedGame === gameId && (
                   <div className="px-6 pb-6 space-y-6">
                     <div>
-                      <h3 className="text-orange-400 font-bold mb-3">How to Play</h3>
+                      <h3 className="text-green-400 font-bold mb-3">How to Play</h3>
                       <ol className="space-y-2">
                         {game.instructions.map((instruction, index) => (
                           <li
@@ -107,7 +111,7 @@ export default function HelpPage() {
                     </div>
 
                     <div>
-                      <h3 className="text-orange-400 font-bold mb-3">Pro Tips</h3>
+                      <h3 className="text-green-400 font-bold mb-3">Pro Tips</h3>
                       <ul className="space-y-2">
                         {game.tips.map((tip, index) => (
                           <li
@@ -148,7 +152,7 @@ export default function HelpPage() {
         {/* Additional Help */}
         <Card className="cyber-card mt-8">
           <CardContent className="p-8 text-center">
-            <h2 className="text-2xl font-bold text-green-400 mb-4">Need More Help?</h2>
+            <h2 className="text-2xl font-bold text-orange-400 mb-4">Need More Help?</h2>
             <p className="text-gray-300 dark:text-gray-300 light:text-gray-700 mb-6">
               If you're experiencing issues or have questions about the games, feel free to reach out for support.
             </p>

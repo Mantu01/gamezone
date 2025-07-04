@@ -32,7 +32,7 @@ export function Navigation() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden md:flex items-center space-x-2">
             {navItems.map((item) => {
               const Icon = item.icon
               return (

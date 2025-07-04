@@ -24,7 +24,7 @@ export default function GamePage() {
   }
 
   const handleStartGame = () => {
-    openModal(gameId, game.name, game.players === "Multiplayer")
+    openModal(gameId, game.name)
   }
 
   return (
@@ -48,21 +48,7 @@ export default function GamePage() {
               <CardContent className="p-8">
                 <div className="text-center mb-6">
                   <div className="text-6xl mb-4 float-animation">{game.icon}</div>
-                  <h1 className="text-3xl font-bold text-green-400 neon-text mb-2">{game.name}</h1>
-                  <div className="flex justify-center space-x-4 text-sm">
-                    <span className="text-orange-400 flex items-center">
-                      <Zap className="w-4 h-4 mr-1" />
-                      {game.difficulty}
-                    </span>
-                    <span className="text-green-300 flex items-center">
-                      {game.players === "Single Player" ? (
-                        <User className="w-4 h-4 mr-1" />
-                      ) : (
-                        <Users className="w-4 h-4 mr-1" />
-                      )}
-                      {game.players}
-                    </span>
-                  </div>
+                  <h1 className="text-3xl font-bold text-orange-400 neon-text mb-2">{game.name}</h1>
                 </div>
 
                 <p className="text-gray-300 dark:text-gray-300 light:text-gray-700 text-center mb-6">
@@ -91,7 +77,7 @@ export default function GamePage() {
           <div className="space-y-6">
             <Card className="cyber-card">
               <CardContent className="p-8">
-                <h3 className="text-green-400 font-bold mb-4 text-center">Game Preview</h3>
+                <h3 className="text-orange-400 font-bold mb-4 text-center">Game Preview</h3>
                 <div className="aspect-square bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg border border-green-400/30 flex items-center justify-center mb-6">
                   <div className="text-6xl opacity-50">{game.icon}</div>
                 </div>

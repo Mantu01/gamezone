@@ -7,21 +7,20 @@ interface GameModeContextType {
   isOpen: boolean;
   gameId: string;
   gameName: string;
-  isMultiplayer: boolean;
   
   // Modal actions
-  openModal: (gameId: string, gameName: string, isMultiplayer: boolean) => void;
+  openModal: (gameId: string, gameName: string) => void;
   closeModal: () => void;
   
   // Mode state
-  mode: "select" | "offline" | "online" | "create" | "join";
+  mode: "select" | "online" | "create" | "join" | "local" | "bots";
   difficulty: string;
   roomCode: string;
   generatedCode: string;
   copied: boolean;
   
   // Mode actions
-  setMode: (mode: "select" | "offline" | "online" | "create" | "join") => void;
+  setMode: (mode: "select" | "online" | "create" | "join" | "local" | "bots") => void;
   setDifficulty: (difficulty: string) => void;
   setRoomCode: (code: string) => void;
   generateRoomCode: () => void;
@@ -35,17 +34,15 @@ export const GameModeProvider = ({ children }: { children: React.ReactNode }) =>
   const [isOpen, setIsOpen] = useState(false);
   const [gameId, setGameId] = useState("");
   const [gameName, setGameName] = useState("");
-  const [isMultiplayer, setIsMultiplayer] = useState(false);
-  const [mode, setMode] = useState<"select" | "offline" | "online" | "create" | "join">("select");
+  const [mode, setMode] = useState<"select" | "online" | "create" | "join" | "local" | "bots">("select");
   const [difficulty, setDifficulty] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const [generatedCode, setGeneratedCode] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const openModal = useCallback((gameId: string, gameName: string, isMultiplayer: boolean) => {
+  const openModal = useCallback((gameId: string, gameName: string) => {
     setGameId(gameId);
     setGameName(gameName);
-    setIsMultiplayer(isMultiplayer);
     setIsOpen(true);
   }, []);
 
@@ -80,7 +77,6 @@ export const GameModeProvider = ({ children }: { children: React.ReactNode }) =>
         isOpen,
         gameId,
         gameName,
-        isMultiplayer,
         openModal,
         closeModal,
         mode,

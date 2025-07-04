@@ -13,8 +13,6 @@ export const gameDetails = {
     name: "Cyber Snake",
     description:"Navigate through the digital maze and consume data packets to grow your cyber snake. Avoid colliding with walls or your own tail in this classic arcade experience with a cyberpunk twist.",
     icon: "🐍",
-    difficulty: "Medium",
-    players: "Single Player",
     features: ["Neon graphics", "Power-ups", "High scores", "Multiple levels"],
     component: SnakeGame,
     instructions: [

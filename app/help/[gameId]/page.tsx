@@ -5,21 +5,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Play } from "lucide-react"
 import { gameDetails } from "@/lib/constants/gameDetails"
-import Loading from "@/components/wraper/Loading"
-import { useUser } from "@/context/UserContext"
 
 export default function GameHelpPage() {
   const router = useRouter()
   const params = useParams()
   const gameId = params.gameId as string
 
-  const { username } = useUser()
-
   const game = gameDetails[gameId as keyof typeof gameDetails]
-
-  if (!username || !game) {
-    return <Loading/>
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black dark:from-black dark:via-gray-900 dark:to-black light:from-gray-100 light:via-gray-50 light:to-gray-200 circuit-bg">
@@ -37,8 +29,8 @@ export default function GameHelpPage() {
 
         <div className="text-center mb-12">
           <div className="text-6xl mb-4 float-animation">{game.icon}</div>
-          <h1 className="text-4xl md:text-6xl font-bold text-green-400 neon-text mb-4">How to Play {game.name}</h1>
-          <p className="text-orange-400 text-lg">Master the digital battlefield</p>
+          <h1 className="text-4xl md:text-6xl font-bold text-orange-400 neon-text mb-4">How to Play {game.name}</h1>
+          <p className="text-green-400 text-lg">Master the digital battlefield</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

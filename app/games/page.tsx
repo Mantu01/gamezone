@@ -13,8 +13,8 @@ export default function GamesPage() {
     <div className="min-h-screen main-bg circuit-bg">
       <main className="container mx-auto px-4 pt-24 pb-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold text-green-400 neon-text mb-4">Game Arsenal</h1>
-          <p className="text-orange-400 text-lg">Choose your digital battlefield</p>
+          <h1 className="text-4xl md:text-6xl font-bold text-orange-400 neon-text mb-4">Game Arsenal</h1>
+          <p className="text-green-400 text-lg">Choose your digital battlefield</p>
         </div>
 
         {/* Search and Filter */}

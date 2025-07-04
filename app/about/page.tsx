@@ -30,8 +30,8 @@ export default function AboutPage() {
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black dark:from-black dark:via-gray-900 dark:to-black light:from-gray-100 light:via-gray-50 light:to-gray-200 circuit-bg">
       <main className="container mx-auto px-4 pt-24 pb-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold text-green-400 neon-text mb-4">About GameZone</h1>
-          <p className="text-orange-400 text-lg">The future of digital gaming</p>
+          <h1 className="text-4xl md:text-6xl font-bold text-orange-400 neon-text mb-4">About GameZone</h1>
+          <p className="text-green-400 text-lg">The future of digital gaming</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">

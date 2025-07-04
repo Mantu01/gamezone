@@ -45,7 +45,7 @@ export default function PlayGamePage() {
               </Button>
               <div className="flex items-center space-x-2">
                 <span className="text-2xl">{game.icon}</span>
-                <h1 className="text-xl font-bold text-green-400">{game.name}</h1>
+                <h1 className="text-xl font-bold text-orange-400">{game.name}</h1>
               </div>
             </div>
 
@@ -62,19 +62,19 @@ export default function PlayGamePage() {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Game Content */}
             <div className="lg:col-span-3 bg">
-              <Card className="cyber-card" ref={containerRef}>
+              <Card className="cyber-card flex flex-col justify-between" ref={containerRef}>
                 <CardContent className="p-8">
                   <GameComponent key={gameKey} />
                 </CardContent>
+                <GameActions />
               </Card>
-              <GameActions />
             </div>
 
             {/* Other Games Sidebar */}
             <div className="lg:col-span-1">
               <Card className="cyber-card">
                 <CardContent className="p-6">
-                  <h3 className="text-green-400 font-bold mb-4 text-center">Other Games</h3>
+                  <h3 className="text-orange-400 font-bold mb-4 text-center">Other Games</h3>
                   <div className="space-y-3">
                     {otherGames.slice(0, 6).map((otherGame) => (
                       <div

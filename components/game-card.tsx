@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Play, Users, User, Zap } from "lucide-react"
+import { Play} from "lucide-react"
 
 interface Game {
   id: string

@@ -4,6 +4,7 @@ import { GameProvider } from "./GameContext";
 import { GameModeProvider } from "./GameModeContext";
 import { GamesListProvider } from "./GamesListContext";
 import { AudioProvider } from "./AudioContext";
+import { SnakeProvider } from "./SnakeContext";
 
 export default function Providers({children}: {children: React.ReactNode}) {
   return (
@@ -13,7 +14,9 @@ export default function Providers({children}: {children: React.ReactNode}) {
           <GameProvider>
             <GameModeProvider>
               <GamesListProvider>
-                {children}
+                <SnakeProvider>
+                  {children}
+                </SnakeProvider>
               </GamesListProvider>
             </GameModeProvider>
           </GameProvider>

@@ -8,13 +8,19 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Wifi, WifiOff, Users, Plus, Copy, Check } from "lucide-react"
 import { useGameMode } from "@/context/GameModeContext"
 
+const levelColors: Record<string, string> = {
+  Easy: "text-green-400 border-green-400 hover:bg-green-400 hover:text-black",
+  Medium: "text-yellow-400 border-yellow-400 hover:bg-yellow-400 hover:text-black",
+  Hard: "text-orange-400 border-orange-400 hover:bg-orange-400 hover:text-black",
+  Impossible: "text-red-500 border-red-500 hover:bg-red-500 hover:text-black",
+}
+
 export function GameModeModal() {
   const router = useRouter()
   const {
     isOpen,
     gameId,
     gameName,
-    isMultiplayer,
     closeModal,
     mode,
     difficulty,
@@ -24,7 +30,6 @@ export function GameModeModal() {
     setMode,
     setDifficulty,
     setRoomCode,
-    generateRoomCode,
     copyRoomCode,
   } = useGameMode()
 
@@ -38,54 +43,46 @@ export function GameModeModal() {
     <Dialog open={isOpen} onOpenChange={closeModal}>
       <DialogContent className=" border-green-400/50 max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-green-400 text-center text-xl">{gameName}</DialogTitle>
+          <DialogTitle className="text-orange-400 text-center text-xl">{gameName}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
           {mode === "select" && (
             <div className="space-y-4">
-              <h3 className="text-orange-400 font-bold text-center">Select Game Mode</h3>
-
-              {isMultiplayer && (
-                <Button onClick={() => setMode("online")} className="cyber-button w-full text-black font-bold h-12">
-                  <Wifi className="w-5 h-5 mr-2" />
-                  Online Mode
-                </Button>
-              )}
-
+              <h3 className="text-green-400 font-bold text-center">Choose How to Play</h3>
               <Button
-                onClick={() => (isMultiplayer ? setMode("offline") : startGame())}
+                onClick={() => setMode("online")}
+                className="cyber-button w-full text-black font-bold h-12"
+              >
+                <Wifi className="w-5 h-5 mr-2" />
+                Online
+              </Button>
+              <Button
+                onClick={() => setMode("local")}
                 variant="outline"
                 className="w-full border-green-400 text-green-400 hover:bg-green-400 hover:text-black h-12"
               >
                 <WifiOff className="w-5 h-5 mr-2" />
-                Offline Mode
+                Local
               </Button>
             </div>
           )}
 
-          {mode === "offline" && (
+          {mode === "online" && (
             <div className="space-y-4">
-              <h3 className="text-orange-400 font-bold text-center">Select Difficulty</h3>
-
-              {["Easy", "Medium", "Hard"].map((level) => (
-                <Button
-                  key={level}
-                  onClick={() => {
-                    setDifficulty(level)
-                    startGame()
-                  }}
-                  variant={difficulty === level ? "default" : "outline"}
-                  className={
-                    difficulty === level
-                      ? "cyber-button w-full text-black font-bold"
-                      : "w-full border-green-400 text-green-400 hover:bg-green-400 hover:text-black"
-                  }
-                >
-                  {level}
-                </Button>
-              ))}
-
+              <h3 className="text-green-400 font-bold text-center">Online Mode</h3>
+              <Button onClick={() => setMode("create")} className="cyber-button w-full text-black font-bold h-12">
+                <Plus className="w-5 h-5 mr-2" />
+                Create Room
+              </Button>
+              <Button
+                onClick={() => setMode("join")}
+                variant="outline"
+                className="w-full border-green-400 text-green-400 hover:bg-green-400 hover:text-black h-12"
+              >
+                <Users className="w-5 h-5 mr-2" />
+                Join Room
+              </Button>
               <Button
                 onClick={() => setMode("select")}
                 variant="ghost"
@@ -96,26 +93,56 @@ export function GameModeModal() {
             </div>
           )}
 
-          {mode === "online" && (
+          {mode === "local" && (
             <div className="space-y-4">
-              <h3 className="text-orange-400 font-bold text-center">Online Mode</h3>
-
-              <Button onClick={generateRoomCode} className="cyber-button w-full text-black font-bold h-12">
-                <Plus className="w-5 h-5 mr-2" />
-                Create Room
-              </Button>
-
+              <h3 className="text-green-400 font-bold text-center">Local Mode</h3>
               <Button
-                onClick={() => setMode("join")}
+                onClick={() => { startGame(); }}
+                className="cyber-button w-full text-black font-bold h-12"
+              >
+                <Users className="w-5 h-5 mr-2" />
+                Multiplayer
+              </Button>
+              <Button
+                onClick={() => setMode("bots")}
                 variant="outline"
                 className="w-full border-green-400 text-green-400 hover:bg-green-400 hover:text-black h-12"
               >
-                <Users className="w-5 h-5 mr-2" />
-                Join Room
+                <WifiOff className="w-5 h-5 mr-2" />
+                Play with Bots
               </Button>
-
               <Button
                 onClick={() => setMode("select")}
+                variant="ghost"
+                className="w-full text-gray-400 hover:text-white"
+              >
+                Back
+              </Button>
+            </div>
+          )}
+
+          {mode === "bots" && (
+            <div className="space-y-4">
+              <h3 className="text-green-400 font-bold text-center">Select Difficulty</h3>
+              {["Easy", "Medium", "Hard", "Impossible"].map((level) => (
+                <Button
+                  key={level}
+                  onClick={() => {
+                    setDifficulty(level)
+                    startGame()
+                  }}
+                  variant={difficulty === level ? "default" : "outline"}
+                  className={
+                    difficulty === level
+                      ? `cyber-button w-full text-black font-bold`
+                      : `w-full ${levelColors[level]}`
+                  }
+                >
+                  {level}
+                </Button>
+              ))}
+              <Button
+                onClick={() => setMode("local")}
                 variant="ghost"
                 className="w-full text-gray-400 hover:text-white"
               >
@@ -126,7 +153,7 @@ export function GameModeModal() {
 
           {mode === "create" && (
             <div className="space-y-4">
-              <h3 className="text-orange-400 font-bold text-center">Room Created</h3>
+              <h3 className="text-green-400 font-bold text-center">Room Created</h3>
 
               <Card className="cyber-card">
                 <CardContent className="p-4 text-center">
@@ -170,7 +197,7 @@ export function GameModeModal() {
 
           {mode === "join" && (
             <div className="space-y-4">
-              <h3 className="text-orange-400 font-bold text-center">Join Room</h3>
+              <h3 className="text-green-400 font-bold text-center">Join Room</h3>
 
               <div className="space-y-2">
                 <label className="text-green-300 text-sm font-medium">Enter Room Code</label>
