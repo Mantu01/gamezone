@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
-import { Wifi, WifiOff, Users, Plus, Copy, Check } from "lucide-react"
+import { Wifi, WifiOff, Users, Plus, Copy, Check, User, Bot } from "lucide-react"
 import { useGameMode } from "@/context/GameModeContext"
 
 const levelColors: Record<string, string> = {
@@ -23,21 +23,44 @@ export function GameModeModal() {
     gameName,
     closeModal,
     mode,
+    playMode,
     difficulty,
     roomCode,
     generatedCode,
     copied,
     setMode,
+    setPlayMode,
     setDifficulty,
     setRoomCode,
     copyRoomCode,
   } = useGameMode()
 
   const startGame = () => {
-    // Redirect to the actual game play page
-    router.push(`/play/${gameId}`)
-    closeModal()
-  }
+    let url = `/play/${gameId}`;
+    const params = new URLSearchParams();
+
+    if (mode === "local") {
+      params.set("mode", "local");
+      switch (playMode) {
+        case "single":
+          params.set("type", "single");
+          break;
+        case "multiplayer":
+          params.set("type", "multiplayer");
+          break;
+        case "bot":
+          params.set("type", "bot");
+          params.set("difficulty", difficulty);
+          break;
+      }
+    } else if (mode === "online") {
+      params.set("mode", "online");
+      params.set("code", roomCode);
+    }
+    router.push(`${url}?${params.toString()}`);
+    closeModal();
+  };
+
 
   return (
     <Dialog open={isOpen} onOpenChange={closeModal}>
@@ -97,19 +120,33 @@ export function GameModeModal() {
             <div className="space-y-4">
               <h3 className="text-green-400 font-bold text-center">Local Mode</h3>
               <Button
-                onClick={() => { startGame(); }}
+                onClick={() => {
+                  setPlayMode("single")
+                  startGame()
+                }}
                 className="cyber-button w-full text-black font-bold h-12"
+              >
+                <User className="w-5 h-5 mr-2" />
+                Single Player
+              </Button>
+              <Button
+                onClick={() => {
+                  setPlayMode("multiplayer")
+                  startGame()
+                }}
+                variant="outline"
+                className="w-full border-green-400 text-green-400 hover:bg-green-400 hover:text-black h-12"
               >
                 <Users className="w-5 h-5 mr-2" />
                 Multiplayer
               </Button>
               <Button
-                onClick={() => setMode("bots")}
+                onClick={() => setMode("local-select")}
                 variant="outline"
                 className="w-full border-green-400 text-green-400 hover:bg-green-400 hover:text-black h-12"
               >
-                <WifiOff className="w-5 h-5 mr-2" />
-                Play with Bots
+                <Bot className="w-5 h-5 mr-2" />
+                Play with Bot
               </Button>
               <Button
                 onClick={() => setMode("select")}
@@ -121,7 +158,7 @@ export function GameModeModal() {
             </div>
           )}
 
-          {mode === "bots" && (
+          {mode === "local-select" && (
             <div className="space-y-4">
               <h3 className="text-green-400 font-bold text-center">Select Difficulty</h3>
               {["Easy", "Medium", "Hard", "Impossible"].map((level) => (
@@ -129,6 +166,7 @@ export function GameModeModal() {
                   key={level}
                   onClick={() => {
                     setDifficulty(level)
+                    setPlayMode("bot")
                     startGame()
                   }}
                   variant={difficulty === level ? "default" : "outline"}

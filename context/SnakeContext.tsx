@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, useEffect, useRef } from "react"
+import { createContext, useContext, useState, useCallback, useEffect, useMemo } from "react"
 import { useGame } from "@/context/GameContext"
 
 interface Position {
@@ -8,164 +8,190 @@ interface Position {
   y: number
 }
 
+type Cell = 0 | 1 | 2 | 3
+
 interface SnakeContextType {
-  snake: Position[]
-  food: Position
+  board: Cell[][]
   score: number
   gameOver: boolean
-  direction: Position
-  canvasRef: React.RefObject<HTMLCanvasElement>
-  CANVAS_SIZE:number
-  handleKeyPress: (e: KeyboardEvent) => void
-  draw: () => void
+  resetGame: () => void
 }
 
 const SnakeContext = createContext<SnakeContextType | undefined>(undefined)
 
-const GRID_SIZE = 10
-const CANVAS_SIZE = 105
+const BOARD_SIZE = 20
+const INITIAL_SNAKE: readonly Position[] = [
+  { x: 10, y: 10 },
+  { x: 9, y: 10 },
+] as const
+const INITIAL_DIRECTION: Position = { x: 1, y: 0 }
+const INITIAL_FOOD: Position = { x: 15, y: 15 }
 
 export function SnakeProvider({ children }: { children: React.ReactNode }) {
-  const { isPaused, onGameOver } = useGame()
+  const { isPaused, onGameOver, gameKey } = useGame()
 
-  const [snake, setSnake] = useState<Position[]>([{ x: 10, y: 10 }])
-  const [food, setFood] = useState<Position>({ x: 15, y: 15 })
-  const [direction, setDirection] = useState<Position>({ x: 0, y: -1 })
-  const [gameOver, setGameOver] = useState(false)
+  const [snake, setSnake] = useState<Position[]>(() => [...INITIAL_SNAKE])
+  const [food, setFood] = useState<Position>(INITIAL_FOOD)
+  const [direction, setDirection] = useState<Position>(INITIAL_DIRECTION)
   const [score, setScore] = useState(0)
+  const [gameOver, setGameOver] = useState(false)
 
-  const canvasRef = useRef<HTMLCanvasElement>(null) as React.RefObject<HTMLCanvasElement>
-  const gameLoopRef = useRef<NodeJS.Timeout | null>(null)
+  // Memoized empty board template to avoid recreating it
+  const emptyBoard = useMemo(() => 
+    Array.from({ length: BOARD_SIZE }, () => Array(BOARD_SIZE).fill(0) as Cell[]), 
+    []
+  )
 
   const generateFood = useCallback(() => {
-    const newFood = {
-      x: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE)),
-      y: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE)),
-    }
+    const snakePositions = new Set(snake.map(segment => `${segment.x},${segment.y}`))
+    let newFood: Position
+    
+    do {
+      newFood = {
+        x: Math.floor(Math.random() * BOARD_SIZE),
+        y: Math.floor(Math.random() * BOARD_SIZE)
+      }
+    } while (snakePositions.has(`${newFood.x},${newFood.y}`))
+    
     setFood(newFood)
+  }, [snake])
+
+  const board = useMemo(() => {
+    const newBoard = emptyBoard.map(row => [...row]) as Cell[][]
+    
+    // Mark snake body
+    for (let i = 0; i < snake.length; i++) {
+      const { x, y } = snake[i]
+      newBoard[y][x] = i === 0 ? 2 : 1
+    }
+    
+    // Mark food
+    newBoard[food.y][food.x] = 3
+    
+    return newBoard
+  }, [snake, food, emptyBoard])
+
+  const resetGame = useCallback(() => {
+    setSnake([...INITIAL_SNAKE])
+    setDirection(INITIAL_DIRECTION)
+    setScore(0)
+    setGameOver(false)
+    setFood(INITIAL_FOOD)
   }, [])
 
-  const checkCollision = useCallback((head: Position, snakeArray: Position[]) => {
-    if (
-      head.x < 0 || head.x >= CANVAS_SIZE / GRID_SIZE ||
-      head.y < 0 || head.y >= CANVAS_SIZE / GRID_SIZE
-    ) return true
+  useEffect(() => {
+    resetGame()
+  }, [gameKey, resetGame])
 
-    return snakeArray.some(segment => head.x === segment.x && head.y === segment.y)
-  }, [])
+  const handleKeyPress = useCallback((e: KeyboardEvent) => {
+    if (isPaused || gameOver) return
+    
+    const key = e.key.toLowerCase()
+    const newDirection = { ...direction }
+    let directionChanged = false
+    
+    switch (key) {
+      case "arrowup":
+      case "w":
+        if (direction.y === 0) {
+          newDirection.x = 0
+          newDirection.y = -1
+          directionChanged = true
+        }
+        break
+      case "arrowdown":
+      case "s":
+        if (direction.y === 0) {
+          newDirection.x = 0
+          newDirection.y = 1
+          directionChanged = true
+        }
+        break
+      case "arrowleft":
+      case "a":
+        if (direction.x === 0) {
+          newDirection.x = -1
+          newDirection.y = 0
+          directionChanged = true
+        }
+        break
+      case "arrowright":
+      case "d":
+        if (direction.x === 0) {
+          newDirection.x = 1
+          newDirection.y = 0
+          directionChanged = true
+        }
+        break
+    }
+    
+    if (directionChanged) {
+      setDirection(newDirection)
+    }
+  }, [direction, isPaused, gameOver])
 
-  const moveSnake = useCallback(() => {
+  const gameLoop = useCallback(() => {
     if (isPaused || gameOver) return
 
-    setSnake(currentSnake => {
-      const newSnake = [...currentSnake]
-      const head = { x: newSnake[0].x + direction.x, y: newSnake[0].y + direction.y }
-
-      if (checkCollision(head, newSnake)) {
+    setSnake(prevSnake => {
+      const head = { 
+        x: prevSnake[0].x + direction.x, 
+        y: prevSnake[0].y + direction.y 
+      }
+      
+      // Check boundaries
+      if (
+        head.x < 0 || 
+        head.x >= BOARD_SIZE || 
+        head.y < 0 || 
+        head.y >= BOARD_SIZE
+      ) {
         setGameOver(true)
         onGameOver()
-        return currentSnake
+        return prevSnake
       }
-
-      newSnake.unshift(head)
-
+      
+      // Check self-collision (skip head)
+      for (let i = 1; i < prevSnake.length; i++) {
+        if (prevSnake[i].x === head.x && prevSnake[i].y === head.y) {
+          setGameOver(true)
+          onGameOver()
+          return prevSnake
+        }
+      }
+      
+      const newSnake = [head, ...prevSnake]
+      
       if (head.x === food.x && head.y === food.y) {
-        setScore(prev => prev + 10)
-        generateFood()
+        setScore(score+1)
+        setTimeout(generateFood, 50)
       } else {
         newSnake.pop()
       }
-
+      
       return newSnake
     })
-  }, [direction, food, isPaused, gameOver, checkCollision, generateFood, onGameOver])
-
-  const handleKeyPress = useCallback((e: KeyboardEvent) => {
-    if (gameOver) return
-    switch (e.key) {
-      case "ArrowUp":
-      case "w":
-      case "W":
-        if (direction.y !== 1) setDirection({ x: 0, y: -1 })
-        break
-      case "ArrowDown":
-      case "s":
-      case "S":
-        if (direction.y !== -1) setDirection({ x: 0, y: 1 })
-        break
-      case "ArrowLeft":
-      case "a":
-      case "A":
-        if (direction.x !== 1) setDirection({ x: -1, y: 0 })
-        break
-      case "ArrowRight":
-      case "d":
-      case "D":
-        if (direction.x !== -1) setDirection({ x: 1, y: 0 })
-        break
-    }
-  }, [direction, gameOver])
-
-  const draw = useCallback(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
-
-    ctx.fillStyle = "#000000"
-    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
-
-    ctx.strokeStyle = "#22c55e20"
-    ctx.lineWidth = 1
-    for (let i = 0; i <= CANVAS_SIZE; i += GRID_SIZE) {
-      ctx.beginPath()
-      ctx.moveTo(i, 0)
-      ctx.lineTo(i, CANVAS_SIZE)
-      ctx.stroke()
-      ctx.beginPath()
-      ctx.moveTo(0, i)
-      ctx.lineTo(CANVAS_SIZE, i)
-      ctx.stroke()
-    }
-
-    snake.forEach((segment, index) => {
-      ctx.fillStyle = index === 0 ? "#fb923c" : "#eaa24c"
-      ctx.shadowColor = "#22c55e"
-      ctx.shadowBlur = 10
-      ctx.fillRect(segment.x * GRID_SIZE, segment.y * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2)
-      ctx.shadowBlur = 0
-    })
-
-    ctx.fillStyle = "#22c55e"
-    ctx.shadowColor = "#22c55e"
-    ctx.shadowBlur = 15
-    ctx.fillRect(food.x * GRID_SIZE, food.y * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2)
-    ctx.shadowBlur = 0
-  }, [snake, food])
+  }, [direction, food, isPaused, gameOver, onGameOver, generateFood])
 
   useEffect(() => {
-    if (!isPaused && !gameOver) {
-      gameLoopRef.current = setInterval(moveSnake, 150)
-    } else if (gameLoopRef.current) {
-      clearInterval(gameLoopRef.current)
-    }
-    return () => {
-      if (gameLoopRef.current) clearInterval(gameLoopRef.current)
-    }
-  }, [moveSnake, isPaused, gameOver])
+    const intervalId = window.setInterval(gameLoop, Math.max(25, 90 - score))
+    return () => clearInterval(intervalId)
+  }, [gameLoop])
 
   useEffect(() => {
-    window.addEventListener("keydown", handleKeyPress)
-    return () => window.removeEventListener("keydown", handleKeyPress)
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
   }, [handleKeyPress])
 
-  useEffect(() => {
-    draw()
-  }, [draw])
+  const contextValue = useMemo(() => ({
+    board,
+    score,
+    gameOver,
+    resetGame
+  }), [board, score, gameOver, resetGame])
 
   return (
-    <SnakeContext.Provider value={{ snake, food, score, gameOver, direction, canvasRef, handleKeyPress, draw, CANVAS_SIZE }}>
+    <SnakeContext.Provider value={contextValue}>
       {children}
     </SnakeContext.Provider>
   )

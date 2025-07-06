@@ -13,14 +13,16 @@ interface GameModeContextType {
   closeModal: () => void;
   
   // Mode state
-  mode: "select" | "online" | "create" | "join" | "local" | "bots";
+  mode: "select" | "online" | "create" | "join" | "local" | "bots" | "local-select";
+  playMode: "single" | "multiplayer" | "bot" | "";
   difficulty: string;
   roomCode: string;
   generatedCode: string;
   copied: boolean;
   
   // Mode actions
-  setMode: (mode: "select" | "online" | "create" | "join" | "local" | "bots") => void;
+  setMode: (mode: "select" | "online" | "create" | "join" | "local" | "bots" | "local-select") => void;
+  setPlayMode: (playMode: "single" | "multiplayer" | "bot") => void;
   setDifficulty: (difficulty: string) => void;
   setRoomCode: (code: string) => void;
   generateRoomCode: () => void;
@@ -34,7 +36,8 @@ export const GameModeProvider = ({ children }: { children: React.ReactNode }) =>
   const [isOpen, setIsOpen] = useState(false);
   const [gameId, setGameId] = useState("");
   const [gameName, setGameName] = useState("");
-  const [mode, setMode] = useState<"select" | "online" | "create" | "join" | "local" | "bots">("select");
+  const [mode, setMode] = useState<"select" | "online" | "create" | "join" | "local" | "bots" | "local-select">("select");
+  const [playMode, setPlayMode] = useState<"single" | "multiplayer" | "bot" | "">("");
   const [difficulty, setDifficulty] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const [generatedCode, setGeneratedCode] = useState("");
@@ -65,6 +68,7 @@ export const GameModeProvider = ({ children }: { children: React.ReactNode }) =>
 
   const resetModal = useCallback(() => {
     setMode("select");
+    setPlayMode("");
     setDifficulty("");
     setRoomCode("");
     setGeneratedCode("");
@@ -80,11 +84,13 @@ export const GameModeProvider = ({ children }: { children: React.ReactNode }) =>
         openModal,
         closeModal,
         mode,
+        playMode,
         difficulty,
         roomCode,
         generatedCode,
         copied,
         setMode,
+        setPlayMode,
         setDifficulty,
         setRoomCode,
         generateRoomCode,

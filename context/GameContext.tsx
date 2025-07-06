@@ -83,6 +83,31 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
+  // Handle keyboard shortcuts
+  const handleKeyboardShortcuts = useCallback((e: KeyboardEvent) => {
+    // Only handle shortcuts when not in input fields
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+      return;
+    }
+
+    switch (e.key) {
+      case ' ':
+        e.preventDefault();
+        togglePause();
+        break;
+      case 'r':
+      case 'R':
+        e.preventDefault();
+        handleReset();
+        break;
+      case 'f':
+      case 'F':
+        e.preventDefault();
+        toggleFullscreen();
+        break;
+    }
+  }, [togglePause, handleReset, toggleFullscreen]);
+
   const onGameOver = useCallback(() => {
     setIsPaused(true);
   }, []);
@@ -98,6 +123,14 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
     };
   }, []);
+
+  // Add keyboard event listener
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyboardShortcuts);
+    return () => {
+      document.removeEventListener('keydown', handleKeyboardShortcuts);
+    };
+  }, [handleKeyboardShortcuts]);
 
   useEffect(() => {
     const storedLikedGames = JSON.parse(localStorage.getItem('likedGames') || '{}') as Likedgames;
