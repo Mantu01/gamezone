@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button } from '../ui/button'
 import { RotateCcw, Pause, Play, Maximize, Minimize, ThumbsUp, ThumbsDown, Share2 } from "lucide-react"
-import { useGame } from "@/context/GameContext"
+import { useGame } from "@/context/GameData/GameContext"
 import {
   Tooltip,
   TooltipContent,

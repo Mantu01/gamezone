@@ -1,14 +1,21 @@
 "use client"
 
-import { SnakeProvider, useSnake } from "@/context/SnakeContext"
-import { useGame } from "@/context/GameContext"
+import { SnakeProvider, useSnake } from "@/context/GamesLogic/SnakeContext"
+import { useGame } from "@/context/GameData/GameContext"
 import { useEffect, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { AlertTriangle, PlayCircle } from "lucide-react"
 
 function SnakeGameContent() {
   const { board, score, gameOver, resetGame } = useSnake()
   const { isPaused } = useGame()
   const [showModal, setShowModal] = useState(false)
+  const searchParams=useSearchParams();
 
+  const mode=searchParams.get('mode');
+  const type=searchParams.get('type');
+  const router=useRouter();
+  
   useEffect(() => {
     if (gameOver) {
       const timer = setTimeout(() => setShowModal(true), 300)
@@ -17,6 +24,30 @@ function SnakeGameContent() {
       setShowModal(false)
     }
   }, [gameOver])
+  
+  if(mode==='online' || type !== 'single'){
+    return (
+      <div className="h-[50vh] w-full flex flex-col justify-center items-center rounded-2xl border-2 border-orange-400 p-6 shadow-lg">
+        <div className="flex items-center gap-2 mb-4">
+          <AlertTriangle className="text-orange-400 w-8 h-8" />
+          <h1 className="text-3xl font-bold text-orange-400">
+            Mode Unavailable
+          </h1>
+        </div>
+        <p className="text-green-500 mb-6 text-center">
+          This mode is not available right now.<br />
+          Only <span className="font-semibold">Single Player</span> mode is available.
+        </p>
+        <button
+          onClick={()=>router.push('/play/snake?mode=local&type=single')}
+          className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-xl transition"
+        >
+          <PlayCircle className="w-5 h-5" />
+          Play Now
+        </button>
+      </div>
+    );
+  }
 
   const getCellStyle = (cellType: number) => {
     switch (cellType) {

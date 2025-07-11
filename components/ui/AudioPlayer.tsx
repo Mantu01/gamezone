@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef } from "react";
-import { useAudio } from "@/context/AudioContext";
+import { useAudio } from "@/context/GameData/AudioContext";
 
 const MUSIC_SRC = "/audio/music-effect.mp3";
 

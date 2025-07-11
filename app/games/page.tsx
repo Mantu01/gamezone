@@ -4,7 +4,7 @@ import { GameCard } from "@/components/game-card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search} from "lucide-react"
-import { useGamesList } from "@/context/GamesListContext"
+import { useGamesList } from "@/context/GameData/GamesListContext"
 
 export default function GamesPage() {
   const { searchTerm, setSearchTerm, resetFilters,filteredGames } = useGamesList()

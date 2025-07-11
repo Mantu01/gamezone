@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState} from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -8,11 +8,11 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
 import { Separator } from "@/components/ui/separator"
-import { useUser } from "@/context/UserContext"
+import { useUser } from "@/context/GameData/UserContext"
 import { useToast } from "@/hooks/use-toast"
-import { User, Music, Settings, Save, RotateCcw, Mail, Calendar } from "lucide-react"
+import { User, Music, Settings, Calendar } from "lucide-react"
 import Image from "next/image"
-import { useAudio } from "@/context/AudioContext"
+import { useAudio } from "@/context/GameData/AudioContext"
 
 export default function SettingsPage() {
   const { username, setUsername } = useUser()

@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState, useCallback, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
-import { useGame } from "@/context/GameContext"
+import { useGame } from "@/context/GameData/GameContext"
 
 const sampleTexts = [
   "The quick brown fox jumps over the lazy dog. This pangram contains every letter of the alphabet at least once.",

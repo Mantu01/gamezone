@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
+import { createContext, useContext, useState, useCallback, useEffect } from "react";
 
 interface GameModeContextType {
   // Modal state
@@ -13,15 +14,15 @@ interface GameModeContextType {
   closeModal: () => void;
   
   // Mode state
-  mode: "select" | "online" | "create" | "join" | "local" | "bots" | "local-select";
-  playMode: "single" | "multiplayer" | "bot" | "";
+  mode: "local" | "online";
+  playMode: "single" | "multiplayer" | "bot";
   difficulty: string;
   roomCode: string;
   generatedCode: string;
   copied: boolean;
   
   // Mode actions
-  setMode: (mode: "select" | "online" | "create" | "join" | "local" | "bots" | "local-select") => void;
+  setMode: (mode: "local" | "online") => void;
   setPlayMode: (playMode: "single" | "multiplayer" | "bot") => void;
   setDifficulty: (difficulty: string) => void;
   setRoomCode: (code: string) => void;
@@ -36,8 +37,8 @@ export const GameModeProvider = ({ children }: { children: React.ReactNode }) =>
   const [isOpen, setIsOpen] = useState(false);
   const [gameId, setGameId] = useState("");
   const [gameName, setGameName] = useState("");
-  const [mode, setMode] = useState<"select" | "online" | "create" | "join" | "local" | "bots" | "local-select">("select");
-  const [playMode, setPlayMode] = useState<"single" | "multiplayer" | "bot" | "">("");
+  const [mode, setMode] = useState<"local" | "online">("local");
+  const [playMode, setPlayMode] = useState<"single" | "multiplayer" | "bot">('single');
   const [difficulty, setDifficulty] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const [generatedCode, setGeneratedCode] = useState("");
@@ -57,7 +58,6 @@ export const GameModeProvider = ({ children }: { children: React.ReactNode }) =>
   const generateRoomCode = useCallback(() => {
     const code = Math.random().toString(36).substring(2, 8).toUpperCase();
     setGeneratedCode(code);
-    setMode("create");
   }, []);
 
   const copyRoomCode = useCallback(() => {
@@ -67,13 +67,34 @@ export const GameModeProvider = ({ children }: { children: React.ReactNode }) =>
   }, [generatedCode]);
 
   const resetModal = useCallback(() => {
-    setMode("select");
-    setPlayMode("");
+    setMode("local");
+    setPlayMode("single");
     setDifficulty("");
     setRoomCode("");
     setGeneratedCode("");
     setCopied(false);
   }, []);
+
+  const searchParams=useSearchParams();
+
+  useEffect(() => {
+    const mode = searchParams.get("mode");
+    if(mode==='local'){
+      setMode('local');
+      const type= searchParams.get("type");
+      if(type==='single') setPlayMode('single');
+      else if(type==='multiplayer') setPlayMode('multiplayer');
+      else if(type==='bot'){
+        setPlayMode('bot');
+        const difficulty = searchParams.get("difficulty");
+        if(difficulty) setDifficulty(difficulty);
+      }
+    }else if(mode==='online'){
+      setMode('online');
+      const code= searchParams.get("code");
+      if(code)  setRoomCode(code);
+    }
+  },[searchParams]);
 
   return (
     <GameModeContext.Provider

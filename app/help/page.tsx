@@ -6,18 +6,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import { gameDetails } from "@/lib/constants/gameDetails"
-import Loading from "@/components/wraper/Loading"
-import { useUser } from "@/context/UserContext"
 
 export default function HelpPage() {
-  const [expandedGame, setExpandedGame] = useState<string | null>("snake")
+  const [expandedGame, setExpandedGame] = useState<string | null>("")
   const router = useRouter()
-
-  const { username } = useUser()
-
-  if (!username) {
-    return <Loading/>
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black dark:from-black dark:via-gray-900 dark:to-black light:from-gray-100 light:via-gray-50 light:to-gray-200 circuit-bg">
@@ -154,7 +146,7 @@ export default function HelpPage() {
           <CardContent className="p-8 text-center">
             <h2 className="text-2xl font-bold text-orange-400 mb-4">Need More Help?</h2>
             <p className="text-gray-300 dark:text-gray-300 light:text-gray-700 mb-6">
-              If you're experiencing issues or have questions about the games, feel free to reach out for support.
+              If you&quot;re experiencing issues or have questions about the games, feel free to reach out for support.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button

@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
-import { useUser } from "@/context/UserContext"
+import { useUser } from "@/context/GameData/UserContext"
 
 export default function UsernameEntry() {
   const [isLoading, setIsLoading] = useState<boolean>(false);

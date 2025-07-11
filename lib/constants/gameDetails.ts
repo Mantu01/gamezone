@@ -19,6 +19,7 @@ interface Info {
   controls?: {
     [key: string]: string[];
   };
+  singlePlayer: boolean;
 }
 
 interface GamesDetails {
@@ -71,6 +72,7 @@ export const gameDetails:GamesDetails = {
         "Space - Pause Game",
       ]
     },
+    singlePlayer: true,
   },
   tictactoe:{
     name:'Tic Tac Toe',
@@ -88,7 +90,8 @@ export const gameDetails:GamesDetails = {
       "Try to control the center cell for better chances of winning",
       "Block your opponent's winning moves",
       "Look for opportunities to create two winning paths simultaneously",
-    ]
+    ],
+    singlePlayer: false,
   },
   rps: {
     name: "Rock Paper Scissors",
@@ -115,7 +118,8 @@ export const gameDetails:GamesDetails = {
         "S - Quick Scissors selection",
         "Space - Random choice",
       ]
-    }
+    },
+    singlePlayer: true,
   },
   chess: {
     name: "Cyber Chess",
@@ -144,7 +148,8 @@ export const gameDetails:GamesDetails = {
         "R - Reset game",
         "U - Undo last move",
       ]
-    }
+    },
+    singlePlayer: true,
   },
   hanoi: {
     name: "Tower of Hanoi",
@@ -174,7 +179,8 @@ export const gameDetails:GamesDetails = {
         "N - Next level",
         "P - Previous level",
       ]
-    }
+    },
+    singlePlayer: true,
   },
   sudoku: {
     name: "Cyber Sudoku",
@@ -204,7 +210,8 @@ export const gameDetails:GamesDetails = {
         "C - Check for errors",
         "N - New game",
       ]
-    }
+    },
+    singlePlayer: true,
   },
   typing: {
     name: "Speed Typing",
@@ -233,7 +240,8 @@ export const gameDetails:GamesDetails = {
         "R - Restart game",
         "Tab - Focus on input field",
       ]
-    }
+    },
+    singlePlayer: true,
   },
   memory: {
     name: "Memory Match",
@@ -262,7 +270,8 @@ export const gameDetails:GamesDetails = {
         "N - New game",
         "H - Show all cards (hint)",
       ]
-    }
+    },
+    singlePlayer: true,
   },
   whack: {
     name: "Whack-a-Mole",
@@ -291,6 +300,7 @@ export const gameDetails:GamesDetails = {
         "R - Restart game",
         "Mouse/Touch - Primary interaction",
       ]
-    }
+    },
+    singlePlayer: true,
   }
 }

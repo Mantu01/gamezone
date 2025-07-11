@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { useGame } from "@/context/GameContext"
+import { useGame } from "@/context/GameData/GameContext"
 
 interface Card {
   id: number

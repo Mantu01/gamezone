@@ -1,9 +1,9 @@
-import { ThemeProvider } from "@/context/ThemeContext";
-import { UserProvider } from "./UserContext";
-import { GameProvider } from "./GameContext";
-import { GameModeProvider } from "./GameModeContext";
-import { GamesListProvider } from "./GamesListContext";
-import { AudioProvider } from "./AudioContext";
+import { ThemeProvider } from "@/context/GameData/ThemeContext";
+import { UserProvider } from "./GameData/UserContext";
+import { GameProvider } from "./GameData/GameContext";
+import { GameModeProvider } from "./GameData/GameModeContext";
+import { GamesListProvider } from "./GameData/GamesListContext";
+import { AudioProvider } from "./GameData/AudioContext";
 
 export default function Providers({children}: {children: React.ReactNode}) {
   return (

@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, useCallback, useEffect, useMemo } from "react"
-import { useGame } from "@/context/GameContext"
+import { useGame } from "@/context/GameData/GameContext"
 
 interface Position {
   x: number
@@ -25,7 +25,10 @@ const INITIAL_SNAKE: readonly Position[] = [
   { x: 9, y: 10 },
 ] as const
 const INITIAL_DIRECTION: Position = { x: 1, y: 0 }
-const INITIAL_FOOD: Position = { x: 15, y: 15 }
+const INITIAL_FOOD: Position = {
+  x: Math.floor(Math.random() * BOARD_SIZE),
+  y: Math.floor(Math.random() * BOARD_SIZE),
+}
 
 export function SnakeProvider({ children }: { children: React.ReactNode }) {
   const { isPaused, onGameOver, gameKey } = useGame()
@@ -76,7 +79,7 @@ export function SnakeProvider({ children }: { children: React.ReactNode }) {
     setDirection(INITIAL_DIRECTION)
     setScore(0)
     setGameOver(false)
-    setFood(INITIAL_FOOD)
+    generateFood()
   }, [])
 
   useEffect(() => {
@@ -174,7 +177,7 @@ export function SnakeProvider({ children }: { children: React.ReactNode }) {
   }, [direction, food, isPaused, gameOver, onGameOver, generateFood])
 
   useEffect(() => {
-    const intervalId = window.setInterval(gameLoop, Math.max(25, 90 - score))
+    const intervalId = window.setInterval(gameLoop, Math.max(20, 80 - score))
     return () => clearInterval(intervalId)
   }, [gameLoop])
 

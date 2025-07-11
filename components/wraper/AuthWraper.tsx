@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Loading from './Loading';
-import { useUser } from '@/context/UserContext';
+import { useUser } from '@/context/GameData/UserContext';
 
 interface AuthWrapperProps {
   children: React.ReactNode;

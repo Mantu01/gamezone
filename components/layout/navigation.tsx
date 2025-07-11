@@ -1,13 +1,13 @@
 "use client"
 
-import { useRef, useState } from "react"
+import {useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { Menu, X, LogOut } from "lucide-react"
 import Image from "next/image"
-import { useUser } from "@/context/UserContext"
+import { useUser } from "@/context/GameData/UserContext"
 import { navItems } from "@/lib/constants/navItems"
 
 export function Navigation() {

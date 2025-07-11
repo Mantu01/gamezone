@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
-import { useGame } from "@/context/GameContext"
+import { useGame } from "@/context/GameData/GameContext"
 
 type Disk = number
 type Tower = Disk[]

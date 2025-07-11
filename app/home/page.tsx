@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { GameCard } from "@/components/game-card"
 import { Play, Users, User, Trophy } from "lucide-react"
-import { useUser } from "@/context/UserContext"
+import { useUser } from "@/context/GameData/UserContext"
 import { useRouter } from "next/navigation"
 import { allGames } from "@/lib/constants/allGames"
 

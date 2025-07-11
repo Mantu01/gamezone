@@ -34,8 +34,7 @@ export default function GameHelpPage() {
           <div className="text-center">
             <div className="text-6xl mb-4">⚠️</div>
             <h1 className="text-4xl md:text-6xl font-bold text-red-400 neon-text mb-4">Game Not Found</h1>
-            <p className="text-gray-300 text-lg mb-8">The game "{gameId}" doesn't exist or hasn't been implemented yet.</p>
-            
+            <p className="text-gray-300 text-lg mb-8">The game &quote;{gameId}&quote; doesn&apos;t exist or hasn&apos;t been implemented yet.</p>
             <div className="space-y-4">
               <Button
                 onClick={() => router.push("/games")}

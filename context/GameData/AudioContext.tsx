@@ -11,7 +11,6 @@ interface AudioContextType {
   setMusicVolume: (value: number[]) => void;
   soundVolume: number[];
   setSoundVolume: (value: number[]) => void;
-  playClickSound: () => void;
 }
 
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
@@ -24,16 +23,6 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
 
   const CLICK_SOUND_SRC = "/audio/sound-effect.mp3";
   let clickAudio: HTMLAudioElement | null = null;
-  const playClickSound = () => {
-    if (!soundEffectsEnabled) return;
-    if (!clickAudio) {
-      clickAudio = new window.Audio(CLICK_SOUND_SRC);
-    }
-    clickAudio.pause();
-    clickAudio.currentTime = 0;
-    clickAudio.volume = (soundVolume[0] ?? 70) / 100;
-    clickAudio.play().catch(() => {});
-  };
   
   useEffect(() => {
     setMusicEnabled(JSON.parse(localStorage.getItem('musicEnabled') || 'false'));
@@ -50,12 +39,20 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   }, [musicEnabled, soundEffectsEnabled, musicVolume, soundVolume]);
 
   useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      playClickSound();
-    }
-    document.addEventListener('click', handleClick, true);
-    return () => document.removeEventListener('click', handleClick, true);
-  }, [playClickSound]);
+    const playClickSound = () => {
+      if (!soundEffectsEnabled) return;
+      console.log(soundEffectsEnabled)
+      if (!clickAudio) {
+        clickAudio = new window.Audio(CLICK_SOUND_SRC);
+      }
+      clickAudio.pause();
+      clickAudio.currentTime = 0;
+      clickAudio.volume = (soundVolume[0] ?? 70) / 100;
+      clickAudio.play().catch(() => {});
+    };
+    document.addEventListener('click', playClickSound, true);
+    return () => document.removeEventListener('click', playClickSound, true);
+  }, [soundEffectsEnabled,soundVolume]);
 
   return (
     <AudioContext.Provider
@@ -68,7 +65,6 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
         setMusicVolume,
         soundVolume,
         setSoundVolume,
-        playClickSound,
       }}
     >
       {children}
