@@ -15,7 +15,7 @@ import Image from "next/image"
 import { useAudio } from "@/context/GameData/AudioContext"
 
 export default function SettingsPage() {
-  const { username, setUsername } = useUser()
+  const { username, setUsername,pic,changePic, ischangingPic } = useUser()
   const { toast } = useToast()
   const { musicEnabled, setMusicEnabled, soundEffectsEnabled, setSoundEffectsEnabled, musicVolume, setMusicVolume, soundVolume, setSoundVolume } = useAudio()
 
@@ -67,21 +67,20 @@ export default function SettingsPage() {
               <div className="flex flex-col items-center space-y-4">
                 <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-green-400">
                   <Image 
-                    src="https://res.cloudinary.com/dqznmhhtv/image/upload/v1750864879/unnamed_zp1hwu.png" 
+                    src={`https://avatar.iran.liara.run/public/?username=${pic}`}
                     alt="Profile" 
                     layout="fill"
                     objectFit="cover"
                     className="hover:opacity-90 transition-opacity"
                   />
                 </div>
-                <div className="flex gap-3">
-                  <Button className="cyber-button text-black font-bold px-4">
-                    Upload New
-                  </Button>
-                  <Button variant="outline" className="border-green-400 text-green-400 hover:bg-green-400/10">
-                    Remove
-                  </Button>
-                </div>
+                <Button 
+                  onClick={changePic}
+                  disabled={ischangingPic}
+                  className="cyber-button text-black font-bold"
+                >
+                  {ischangingPic ? "Changing..." : "Change Avatar"}
+                </Button>
               </div>
               
               <div className="space-y-4">

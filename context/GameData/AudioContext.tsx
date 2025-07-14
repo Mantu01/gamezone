@@ -17,7 +17,7 @@ const AudioContext = createContext<AudioContextType | undefined>(undefined);
 
 export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   const [musicEnabled, setMusicEnabled] = useState(false);
-  const [soundEffectsEnabled, setSoundEffectsEnabled] = useState(true);
+  const [soundEffectsEnabled, setSoundEffectsEnabled] = useState(false);
   const [musicVolume, setMusicVolume] = useState([30]);
   const [soundVolume, setSoundVolume] = useState([70]);
 
@@ -41,7 +41,6 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const playClickSound = () => {
       if (!soundEffectsEnabled) return;
-      console.log(soundEffectsEnabled)
       if (!clickAudio) {
         clickAudio = new window.Audio(CLICK_SOUND_SRC);
       }

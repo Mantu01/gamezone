@@ -5,6 +5,7 @@ const nextConfig = {
     remotePatterns: [
       "res.cloudinary.com",
       "i.pravatar.cc",
+      "avatar.iran.liara.run",
     ].map((hostname) => ({
       protocol: "https",
       hostname,

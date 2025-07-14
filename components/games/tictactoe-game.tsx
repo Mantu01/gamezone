@@ -21,7 +21,7 @@ function TicTacToeGameInner() {
   }, [winner])
   
   return (
-    <div className="min-h-[80vh] bg-gray-100 dark:bg-black p-4">
+    <div className="max-h-[80vh] bg-gray-100 dark:bg-black p-4">
       <div className="max-w-2xl mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -39,8 +39,8 @@ function TicTacToeGameInner() {
             </span>
           </div>
         </div>
-        <div className="bg-white h-[60vh] dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
-          <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto pt-[5vh]">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
+          <div className="grid grid-cols-3 gap-6 max-w-sm mx-auto py-[3vh]">
             {board.map((cell, index) => (
               <Button
                 key={index}

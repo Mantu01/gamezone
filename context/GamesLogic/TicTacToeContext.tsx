@@ -73,6 +73,7 @@ export const TicTacToeProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setCurrentPlayer(currentPlayer === "X" ? "O" : "X")
       }
+      console.log(tictac.getBoard())
     },
     [board, currentPlayer, winner, isPaused, checkWinner],
   )

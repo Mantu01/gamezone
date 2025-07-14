@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { createContext, useContext, useState, useCallback, useEffect } from "react";
 
 interface GameModeContextType {
@@ -76,6 +76,14 @@ export const GameModeProvider = ({ children }: { children: React.ReactNode }) =>
   }, []);
 
   const searchParams=useSearchParams();
+  const params = useParams()
+  const currentGame = params.gameId as string
+  
+  useEffect(()=>{
+    if(currentGame){
+      setGameName(currentGame)
+    }
+  },[currentGame]);
 
   useEffect(() => {
     const mode = searchParams.get("mode");

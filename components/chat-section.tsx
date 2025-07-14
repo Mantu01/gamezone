@@ -8,77 +8,12 @@ import { useUser } from "@/context/GameData/UserContext";
 import { MessageProvider, useMessageContext } from "@/context/Socket/MessageContext";
 import Image from "next/image";
 import { formatTime } from "@/helpers/Micro/formateTime";
+import { useSocket } from "@/context/Socket/SocketContext";
 
 function ChatContent() {
   const { username } = useUser();
-  const {
-    messages,
-    newMessage,
-    setNewMessage,
-    connectedUsers,
-    isConnected,
-    isLoading,
-    showUserList,
-    setShowUserList,
-    addMessage,
-    addSystemMessage,
-    sendMessage,
-    messagesEndRef,
-    chatContainerRef,
-    setConnectedUsers,
-  } = useMessageContext();
-
-  const onlineUsers = connectedUsers.filter(u => u.isOnline);
-
-  // User join effect
-  useEffect(() => {
-    if (username) {
-      const currentUser = {
-        id: username,
-        username,
-        avatar: `https://i.pravatar.cc/41?u=${username}`,
-        isOnline: true
-      };
-      setConnectedUsers(prev => {
-        const exists = prev.find(u => u.id === username);
-        if (!exists) {
-          const newUsers = [...prev, currentUser];
-          addSystemMessage(`${username} joined the game`);
-          return newUsers;
-        }
-        return prev;
-      });
-    }
-    // eslint-disable-next-line
-  }, [username]);
-
-  // Simulate activity
-  useEffect(() => {
-    if (!username) return;
-    const simulateActivity = () => {
-      const randomUser = ['CyberWarrior', 'NeonHunter', 'EliteSniper'][Math.floor(Math.random() * 3)];
-      const randomMessages = [
-        'Nice move!',
-        'This is getting intense!',
-        'GG everyone',
-        'Anyone else lagging?',
-        'Let\'s go team!',
-        'That was epic!',
-        'Strategy time',
-        'Ready for next round?'
-      ];
-      if (Math.random() < 0.3) {
-        const randomMessage = randomMessages[Math.floor(Math.random() * randomMessages.length)];
-        addMessage(randomUser, randomMessage);
-      }
-    };
-    const activityInterval = setInterval(simulateActivity, 15000);
-    return () => clearInterval(activityInterval);
-    // eslint-disable-next-line
-  }, [username]);
-
-
-  if (!username) return null;
+  const {connected}=useSocket()
+  const {messages,newMessage,setNewMessage,connectedUsers,showUserList,setShowUserList,sendMessage,messagesEndRef}=useMessageContext();
 
   return (
     <Card className="cyber-card flex flex-col h-[70vh] relative">
@@ -100,24 +35,17 @@ function ChatContent() {
               {showUserList ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </Button>
             <div className="flex items-center space-x-1">
-              {isConnected ? (
+              {connected ? (
                 <Wifi className="w-4 h-4 text-green-400" />
               ) : (
                 <WifiOff className="w-4 h-4 text-red-400 animate-pulse" />
               )}
               <span className="text-green-400 text-xs font-mono bg-green-400/20 px-2 py-1 rounded">
-                {onlineUsers.length}
+                {connectedUsers.length}
               </span>
             </div>
           </div>
         </div>
-        {!isConnected && (
-          <div className="mt-2 text-center">
-            <span className="text-red-400 text-xs font-mono animate-pulse">
-              {isLoading ? 'ESTABLISHING CONNECTION...' : 'CONNECTION LOST - RETRYING...'}
-            </span>
-          </div>
-        )}
       </div>
       {showUserList && (
         <div className="absolute top-16 right-4 z-10 bg-black/95 backdrop-blur-md border border-green-400/30 rounded-lg p-3 min-w-[220px] shadow-lg shadow-green-400/20">
@@ -125,21 +53,20 @@ function ChatContent() {
           <div className="space-y-2 max-h-40 overflow-y-auto">
             {connectedUsers.map((user) => (
               <div key={user.id} className="flex items-center space-x-2 text-xs p-2 rounded border border-green-400/20 bg-black/40">
-                <div className={`w-2 h-2 rounded-full ${user.isOnline ? 'bg-green-400 animate-pulse' : 'bg-gray-400'}`} />
                 <Image 
-                  src={user.avatar || `https://i.pravatar.cc/20?u=${user.id}`} 
+                  src={`https://avatar.iran.liara.run/public/?username=${user.pic}`} 
                   alt={user.username}
                   className="rounded-full border border-green-400/30"
                   width={20}
                   height={20}
                 />
+                <span className="text-green-400 font-mono">{user.username}</span>
               </div>
             ))}
           </div>
         </div>
       )}
       <div 
-        ref={chatContainerRef}
         className="flex-1 overflow-y-auto p-4 space-y-3 bg-black/20 backdrop-blur-sm scroll-smooth"
       >
         {messages.length === 0 ? (
@@ -159,16 +86,16 @@ function ChatContent() {
                   <Image 
                     width={32}
                     height={32} 
-                    src={msg.avatar || `https://i.pravatar.cc/32?u=${msg.userId}`} 
-                    alt={msg.username}
+                    src={`https://avatar.iran.liara.run/public/?username=${msg.pic}`} 
+                    alt={msg.sender}
                     className="rounded-full border-2 border-green-400/30 flex-shrink-0"
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-1">
-                      <span className={`text-xs font-bold font-mono ${msg.userId === username ? 'text-orange-400' : 'text-green-400'}`}>{msg.username}</span>
+                      <span className={`text-xs font-bold font-mono ${msg.sender === username ? 'text-orange-400' : 'text-green-400'}`}>{msg.sender===username?"You":msg.sender}</span>
                       <span className="text-xs text-green-400/60 font-mono">{formatTime(msg.timestamp)}</span>
                     </div>
-                    <div className={`px-3 py-2 rounded-lg max-w-xs break-words  border-green-400/30 ${msg.userId === username ? 'bg-orange-900/60 text-orange-200' : 'bg-green-900/60 text-green-200 border'}`}>{msg.message}</div>
+                    <div className={`px-3 py-[5px] rounded-lg max-w-xs break-words  border-green-400/30 ${msg.sender === username ? 'bg-orange-900/60 text-orange-200' : 'bg-green-900/60 text-green-200 border'}`}>{msg.message}</div>
                   </div>
                 </>
               )}
@@ -178,18 +105,19 @@ function ChatContent() {
         <div ref={messagesEndRef} />
       </div>
       <div className="p-4 border-t border-green-400/20 bg-black/40 backdrop-blur-sm">
-        <form onSubmit={e => sendMessage(e, username)} className="flex items-center space-x-2">
+        <form onSubmit={e => sendMessage(e)} className="flex items-center space-x-2">
           <input
             type="text"
             value={newMessage}
-            placeholder={isConnected ? "Enter battle transmission..." : "Connection lost..."}
+            onChange={e => setNewMessage(e.target.value)}
+            placeholder={connected ? "Enter battle transmission..." : "Connection lost..."}
             className="flex-1 px-3 py-2 rounded-lg border border-green-400/30 bg-black/60 text-green-200 placeholder:text-green-400/60 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent font-mono text-sm"
-            disabled={!isConnected || isLoading}
+            disabled={!connected}
             maxLength={500}
           />
           <Button 
             type="submit" 
-            disabled={!newMessage.trim() || !isConnected || isLoading}
+            disabled={!newMessage.trim() || !connected}
             className="bg-orange-400 text-black hover:bg-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             size="sm"
           >

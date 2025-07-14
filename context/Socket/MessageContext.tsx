@@ -1,23 +1,25 @@
 'use client';
 
-import React, { createContext, useContext, useState, useRef, ReactNode } from "react";
+import React, { createContext, useContext, useState, useRef, ReactNode, useEffect } from "react";
+import { useSocket } from "./SocketContext";
+import { v4 as uuid } from "uuid";
+import { useUser } from "../GameData/UserContext";
+import { useGameMode } from "../GameData/GameModeContext";
 
 interface ChatMessage {
   id: string;
-  userId: string;
-  username: string;
+  sender: string;
   message: string;
   timestamp: string;
-  avatar?: string;
+  pic?: string;
   isSystemMessage?: boolean;
 }
 
 interface ChatUser {
-  id: string;
+  id:string;
+  socketId?: string;
   username: string;
-  avatar?: string;
-  isOnline: boolean;
-  lastSeen?: string;
+  pic?: string;
 }
 
 interface MessageContextType {
@@ -25,13 +27,10 @@ interface MessageContextType {
   newMessage: string;
   setNewMessage: (msg: string) => void;
   connectedUsers: ChatUser[];
-  isConnected: boolean;
-  isLoading: boolean;
   showUserList: boolean;
   setShowUserList: (show: boolean) => void;
-  addMessage: (sender: string, message: string) => void;
-  addSystemMessage: (message: string) => void;
-  sendMessage: (e: React.FormEvent, username: string) => void;
+  addMessage: (sender: string, message: string,pic:string) => void;
+  sendMessage: (e: React.FormEvent) => void;
   messagesEndRef: React.RefObject<HTMLDivElement>;
   chatContainerRef: React.RefObject<HTMLDivElement>;
   setConnectedUsers: React.Dispatch<React.SetStateAction<ChatUser[]>>;
@@ -43,44 +42,70 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [connectedUsers, setConnectedUsers] = useState<ChatUser[]>([]);
-  const [isConnected, setIsConnected] = useState(true);
   const [showUserList, setShowUserList] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { socket, connected } = useSocket();
+  const {username,pic,id}=useUser()
+  const {roomCode,gameName}=useGameMode()
 
   const messagesEndRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>;
   const chatContainerRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>;
 
-  const addMessage = (sender: string, message: string) => {
+
+  useEffect(() => {
+    if (!socket) return;
+    const handleMessage = (msg: ChatMessage) => {
+      setMessages(prev => [...prev, msg]);
+    };
+    const handleUserList = (users: ChatUser[]) => {
+      console.log(users)
+      setConnectedUsers(users);
+    };
+    socket.on("chat:message", handleMessage);
+    socket.on(`chat:${gameName}:${roomCode}:users`, handleUserList);
+    return () => {
+      socket.off("chat:message", handleMessage);
+      socket.off("chat:users", handleUserList);
+    };
+  }, [socket]);
+
+  const addMessage = (sender: string, message: string,pic:string) => {
     const newMsg: ChatMessage = {
-      id: Date.now().toString(),
-      userId: sender,
-      username: sender,
+      id: uuid(),
+      sender,
       message,
       timestamp: new Date().toISOString(),
-      avatar: `https://i.pravatar.cc/40?u=${sender}`,
+      pic,
       isSystemMessage: false
     };
-    setMessages(prev => [...prev, newMsg]);
+    if (socket) {
+      socket.emit("chat:message", newMsg);
+    }
   };
 
-  const addSystemMessage = (message: string) => {
-    const systemMessage: ChatMessage = {
-      id: Date.now().toString(),
-      userId: 'system',
-      username: 'System',
-      message,
-      timestamp: new Date().toISOString(),
-      isSystemMessage: true,
-    };
-    setMessages(prev => [...prev, systemMessage]);
-  };
-
-  const sendMessage = (e: React.FormEvent, username: string) => {
+  const sendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !isConnected || !username) return;
-    addMessage(username, newMessage.trim());
+    if (!newMessage.trim() || !connected || !username) return;
+    addMessage(username, newMessage.trim(),pic);
     setNewMessage("");
   };
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    if (socket && connected && gameName && roomCode && username && id) {
+      socket.emit("chat:join", {id,username,pic,roomCode,gameName});
+    }
+    return ()=>{
+      if(socket?.connected){
+        socket.emit('chat:leave',{id,roomCode,gameName});
+      }
+    }
+  }, [socket, connected,gameName,roomCode,username,id]);
 
   return (
     <MessageContext.Provider
@@ -89,12 +114,9 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
         newMessage,
         setNewMessage,
         connectedUsers,
-        isConnected,
-        isLoading,
         showUserList,
         setShowUserList,
         addMessage,
-        addSystemMessage,
         sendMessage,
         messagesEndRef,
         chatContainerRef,
