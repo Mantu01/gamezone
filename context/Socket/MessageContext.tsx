@@ -2,12 +2,11 @@
 
 import React, { createContext, useContext, useState, useRef, ReactNode, useEffect } from "react";
 import { useSocket } from "./SocketContext";
-import { v4 as uuid } from "uuid";
 import { useUser } from "../GameData/UserContext";
 import { useGameMode } from "../GameData/GameModeContext";
 
 interface ChatMessage {
-  id: string;
+  senderId: string;
   sender: string;
   message: string;
   timestamp: string;
@@ -58,28 +57,32 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
       setMessages(prev => [...prev, msg]);
     };
     const handleUserList = (users: ChatUser[]) => {
-      console.log(users)
       setConnectedUsers(users);
     };
-    socket.on("chat:message", handleMessage);
+    socket.on(`chat:${gameName}:${roomCode}:message`, handleMessage);
     socket.on(`chat:${gameName}:${roomCode}:users`, handleUserList);
     return () => {
-      socket.off("chat:message", handleMessage);
-      socket.off("chat:users", handleUserList);
+      socket.off(`chat:${gameName}:${roomCode}:message`, handleMessage);
+      socket.off(`chat:${gameName}:${roomCode}:users`, handleUserList);
     };
   }, [socket]);
 
   const addMessage = (sender: string, message: string,pic:string) => {
     const newMsg: ChatMessage = {
-      id: uuid(),
+      senderId:id,
       sender,
       message,
       timestamp: new Date().toISOString(),
       pic,
       isSystemMessage: false
     };
+    const msgData={
+      msg:newMsg,
+      roomCode,
+      gameName
+    }
     if (socket) {
-      socket.emit("chat:message", newMsg);
+      socket.emit("chat:message", msgData);
     }
   };
 
@@ -99,6 +102,7 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (socket && connected && gameName && roomCode && username && id) {
       socket.emit("chat:join", {id,username,pic,roomCode,gameName});
+      socket.on('chat:history',(allChats:ChatMessage[])=>setMessages(allChats))
     }
     return ()=>{
       if(socket?.connected){

@@ -1,19 +1,27 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from "react"
+import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react"
 import { useGame } from "../GameData/GameContext"
+import { useSocket } from "../Socket/SocketContext"
 import { useGameMode } from "../GameData/GameModeContext"
-import { TicTacToe } from "@/helpers/games/tictactoe"
+import { useUser } from "../GameData/UserContext"
+import tictactoeClient from "@/helpers/games/tictactoe"
 
 export type Cell = 'X' | 'O' | null
 
+export type PlayerInfo = {
+  name: string
+  symbol: 'X' | 'O'
+  isBot: boolean
+}
 
 type TicTacToeContextType = {
   board: Cell[]
-  currentPlayer: string
-  winner: string| null
+  currentPlayer: PlayerInfo
+  players: [PlayerInfo, PlayerInfo]
+  winner: PlayerInfo | 'Draw' | null
   winningLine: number[]
   handleCellClick: (index: number) => void
-  resetGame: () => void
   getGameStatus: () => string
+  canMove: boolean
 }
 
 const TicTacToeContext = createContext<TicTacToeContextType | undefined>(undefined)
@@ -27,70 +35,79 @@ export const useTicTacToe = () => {
 }
 
 export const TicTacToeProvider = ({ children }: { children: ReactNode }) => {
-
-  const {mode,playMode,difficulty}=useGameMode();
+  const { mode, playMode, roomCode, gameName,difficulty} = useGameMode()
+  const { username, id: userId } = useUser()
+  const { socket, connected } = useSocket()
   const [board, setBoard] = useState<Cell[]>(Array(9).fill(null))
-  const [currentPlayer, setCurrentPlayer] = useState<string>("X")
-  const [isPlayer1, setIsPlayer1] = useState<boolean>(true)
-  const [winner, setWinner] = useState<string| null>(null)
+  const [players, setPlayers] = useState<[PlayerInfo, PlayerInfo]>([
+    { name: username || 'Player 1', symbol: 'X', isBot: false },
+    { name: 'Player 2', symbol: 'O', isBot: false },
+  ])
+  const [currentPlayer, setCurrentPlayer] = useState<PlayerInfo>(players[0])
+  const [winner, setWinner] = useState<PlayerInfo | 'Draw' | null>(null)
   const [winningLine, setWinningLine] = useState<number[]>([])
-  const {isPaused,onGameOver}=useGame();
+  const [canMove, setCanMove] = useState(true)
+  const { isPaused } = useGame()
 
-  const tictac=new TicTacToe(board);
-
-  const checkWinner = useCallback((board:Cell[]): { winner: string | null; line: number[] } => {
-    const lines = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8], // rows
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8], // columns
-      [0, 4, 8],
-      [2, 4, 6], // diagonals
-    ]
-    for (const line of lines) {
-      const [a, b, c] = line
-      if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-        return { winner: board[a], line }
-      }
-    }
-    return { winner: null, line: [] }
-  }, [])
+  const assignPlayers = useCallback(() => {
+    const [player1,player2]=tictactoeClient.getPlayers(username,playMode,mode);
+    setPlayers([player1, player2])
+    setCurrentPlayer(player1)
+    setCanMove(true)
+  }, [username, playMode, mode])
 
   const handleCellClick = useCallback((index: number) => {
-      if (isPaused || board[index] || winner) return
-      const newBoard = [...board]
-      newBoard[index] = isPlayer1 ? "X" : "O"
-      setIsPlayer1(!isPlayer1)
-      setBoard(newBoard)
-      const { winner: gameWinner, line } = checkWinner(newBoard)
-      if (gameWinner) {
-        setWinner(gameWinner)
-        setWinningLine(line)
-      } else if (newBoard.every((cell) => cell !== null)) {
-        setWinner("Draw")
-      } else {
-        setCurrentPlayer(currentPlayer === "X" ? "O" : "X")
-      }
-      console.log(tictac.getBoard())
-    },
-    [board, currentPlayer, winner, isPaused, checkWinner],
-  )
+    if (isPaused || board[index] || winner || !canMove) return
+    const symbol = currentPlayer.symbol
+    const newBoard = [...board]
+    newBoard[index] = symbol
+    setBoard(newBoard)
+    const { winner: gameWinner, line } = tictactoeClient.checkWinner(newBoard)
+    if (gameWinner) {
+      const winPlayer = players.find((p) => p.symbol === gameWinner) || players[0]
+      setWinner(winPlayer)
+      setWinningLine(line)
+      return
+    } else if (newBoard.every((cell) => cell !== null)) {
+      setWinner('Draw')
+      return
+    }
+    const nextPlayer = players.find((p) => p.symbol !== symbol) || players[0]
+    setCurrentPlayer(nextPlayer)
+    if (playMode === 'bot' && nextPlayer.isBot) {
+      setCanMove(false)
+      setTimeout(() => {
+        const botMoveIndex = tictactoeClient.getBotMove(newBoard,difficulty.toLowerCase(),players[0].symbol,players[1].symbol)
+        const updatedBoard = [...newBoard]
+        updatedBoard[botMoveIndex] = nextPlayer.symbol
+        setBoard(updatedBoard)
+        const { winner: botGameWinner, line: botLine } = tictactoeClient.checkWinner(updatedBoard)
+        if (botGameWinner) {
+          const winPlayer = players.find((p) => p.symbol === botGameWinner) || players[0]
+          setWinner(winPlayer)
+          setWinningLine(botLine)
+        } else if (updatedBoard.every((cell) => cell !== null)) {
+          setWinner('Draw')
+        } else {
+          const humanPlayer = players.find((p) => !p.isBot) || players[0]
+          setCurrentPlayer(humanPlayer)
+          setCanMove(true)
+        }
+      }, 800)
+    } else {
+      setCanMove(true)
+    }
+  }, [board, currentPlayer, winner, isPaused, players, canMove, playMode])
 
-  const resetGame = useCallback(() => {
-    setBoard(Array(9).fill(null))
-    setCurrentPlayer("X")
-    setWinner(null)
-    setWinningLine([])
-    onGameOver();
-  }, [])
+  useEffect(() => {
+    assignPlayers()
+  }, [username, playMode, mode, assignPlayers])
 
   const getGameStatus = () => {
-    if (winner === "Draw") return "It's a Draw!"
-    if (winner) return `Player ${winner} Wins!`
-    if (isPaused) return "Game Paused"
-    return `Player ${currentPlayer}'s Turn`
+    if (winner === 'Draw') return "It's a Draw!"
+    if (winner) return `${winner.name} (${winner.symbol}) Wins!`
+    if (isPaused) return 'Game Paused'
+    return `Turn: ${currentPlayer.name} (${currentPlayer.symbol})`
   }
 
   return (
@@ -98,11 +115,12 @@ export const TicTacToeProvider = ({ children }: { children: ReactNode }) => {
       value={{
         board,
         currentPlayer,
+        players,
         winner,
         winningLine,
         handleCellClick,
-        resetGame,
         getGameStatus,
+        canMove,
       }}
     >
       {children}

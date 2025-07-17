@@ -6,8 +6,8 @@ import { X, RefreshCw, Trophy, Users } from "lucide-react"
 import { useGame } from "@/context/GameData/GameContext"
 
 function TicTacToeGameInner() {
-  const {board,currentPlayer,winner,winningLine,handleCellClick,resetGame,getGameStatus,} = useTicTacToe()
-  const {isPaused}=useGame()
+  const { board, players, winner, winningLine, handleCellClick, getGameStatus, canMove } = useTicTacToe()
+  const {isPaused,handleReset}=useGame()
   
   const [showModal, setShowModal] = useState(false)
   
@@ -28,10 +28,10 @@ function TicTacToeGameInner() {
             <div className="flex items-center gap-2">
               <Users className="w-5 h-5 text-gray-500 dark:text-gray-400" />
               <span className="text-gray-700 dark:text-gray-300 font-medium">
-                Current Player: 
-                <span className={`ml-2 font-bold ${currentPlayer === 'X' ? 'text-green-400' : 'text-orange-400'}`}>
-                  {currentPlayer}
-                </span>
+                <span className="font-semibold">Players:</span>
+                <span className={`ml-2 font-bold ${players[0].symbol === 'X' ? 'text-green-400' : 'text-orange-400'}`}>{players[0].name} ({players[0].symbol})</span>
+                <span className="mx-2 text-gray-400 dark:text-gray-500">vs</span>
+                <span className={`font-bold ${players[1].symbol === 'X' ? 'text-green-400' : 'text-orange-400'}`}>{players[1].name} ({players[1].symbol})</span>
               </span>
             </div>
             <span className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -45,7 +45,7 @@ function TicTacToeGameInner() {
               <Button
                 key={index}
                 onClick={() => handleCellClick(index)}
-                disabled={isPaused || !!cell || !!winner}
+                disabled={isPaused || !!cell || !!winner || !canMove}
                 className={`
                   aspect-square text-4xl sm:text-5xl font-bold h-20 w-20 sm:h-24 sm:w-24
                   transition-all duration-200 hover:scale-105 active:scale-95
@@ -89,18 +89,18 @@ function TicTacToeGameInner() {
                 <p className="text-lg text-gray-600 dark:text-gray-300">
                   {winner === "Draw" ? (
                     <span className="text-orange-400">It&apos;s a Draw!</span>
-                  ) : (
+                  ) : winner ? (
                     <>
-                      Player <span className={winner === "X" ? "text-green-400" : "text-orange-400"}>{winner}</span> Wins!
+                      <span className={winner.symbol === "X" ? "text-green-400" : "text-orange-400"}>{winner.name} ({winner.symbol})</span> Wins!
                     </>
-                  )}
+                  ) : null}
                 </p>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-3 pt-4">
                 <Button 
-                  onClick={()=>{resetGame(); setShowModal(false)}}
-                  className="flex-1 bg-green-500 hover:bg-green-600 text-white border-0 font-semibold py-2.5 transition-all duration-200 hover:scale-105"
+                  onClick={()=>{handleReset(); setShowModal(false)}}
+                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white border-0 font-semibold py-2.5 transition-all duration-200 hover:scale-105"
                 >
                   <RefreshCw className="w-4 h-4 mr-2" />
                   Play Again

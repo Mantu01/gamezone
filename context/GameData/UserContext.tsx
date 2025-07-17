@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
-import {v4 as uuid} from 'uuid'
+import {uid } from 'uid'
 
 interface UserContextType {
   id:string;
@@ -35,7 +35,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const changePic = () => {
     setIsChangingPic(true);
     setTimeout(() => {
-      const newPic = uuid();
+      const newPic = uid(5);
       setPic(newPic);
       localStorage.setItem("pic", newPic);
       setIsChangingPic(false); 
@@ -46,7 +46,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     setName(name);
     const id=localStorage.getItem('id');
     if(!id){
-      const newId=uuid()
+      const newId=uid()
       localStorage.setItem('id',newId)
     }
     localStorage.setItem("gamezone-username", name);

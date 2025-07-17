@@ -55,7 +55,7 @@ export default function PlayGamePage() {
         </div>
       </div>
 
-      <main className="pt-5 px-4 container mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <main className="pt-5 px-4 container mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6 scale-95">
         <div className="lg:col-span-3">
           <Card className="cyber-card flex flex-col justify-around" ref={containerRef}>
             <GameComponent key={gameKey} />

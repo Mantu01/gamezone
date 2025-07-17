@@ -29,7 +29,7 @@ export default function GamePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black dark:from-black dark:via-gray-900 dark:to-black light:from-gray-100 light:via-gray-50 light:to-gray-200 circuit-bg">
-      <main className="container mx-auto px-4 pt-24 pb-8">
+      <main className="container mx-auto px-4 pt-20">
         <div className="mb-8">
           <Button
             onClick={() => router.back()}
@@ -41,9 +41,9 @@ export default function GamePage() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Game Info */}
-          <div className="space-y-6">
+          <div className="">
             <Card className="cyber-card">
               <CardContent className="p-8">
                 <div className="text-center mb-6">
@@ -78,7 +78,7 @@ export default function GamePage() {
             <Card className="cyber-card">
               <CardContent className="p-8">
                 <h3 className="text-orange-400 font-bold mb-4 text-center">Game Preview</h3>
-                <div className="aspect-square bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg border border-green-400/30 flex items-center justify-center mb-6">
+                <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg border border-green-400/30 flex items-center justify-center mb-6">
                   <div className="text-6xl opacity-50">{game.icon}</div>
                 </div>
 
@@ -104,7 +104,6 @@ export default function GamePage() {
           </div>
         </div>
       </main>
-
       <GameModeModal />
     </div>
   )

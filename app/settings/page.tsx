@@ -67,7 +67,7 @@ export default function SettingsPage() {
               <div className="flex flex-col items-center space-y-4">
                 <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-green-400">
                   <Image 
-                    src={`https://avatar.iran.liara.run/public/?username=${pic}`}
+                    src={`https://api.dicebear.com/7.x/micah/svg?seed=${pic}`}
                     alt="Profile" 
                     layout="fill"
                     objectFit="cover"
