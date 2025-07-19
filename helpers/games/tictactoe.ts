@@ -111,11 +111,13 @@ export class TicTacToe {
       name: username || 'Player 1',
       symbol: symbol,
       isBot: false,
+      pic:''
     }
     const player2: PlayerInfo = {
       name: playMode === 'bot' ? 'Bot' : (mode === 'online' ? 'Opponent' : 'Player 2'),
       symbol:symbol==='X'?'O':'X',
       isBot: playMode === 'bot',
+      pic:''
     }
     return [player1,player2]
   }

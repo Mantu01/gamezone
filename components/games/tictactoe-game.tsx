@@ -1,118 +1,118 @@
 "use client"
-import { Button } from "@/components/ui/button"
-import { useTicTacToe, TicTacToeProvider } from "@/context/GamesLogic/TicTacToeContext"
-import { useState, useEffect} from "react"
-import { X, RefreshCw, Trophy, Users } from "lucide-react"
-import { useGame } from "@/context/GameData/GameContext"
 
-function TicTacToeGameInner() {
-  const { board, players, winner, winningLine, handleCellClick, getGameStatus, canMove } = useTicTacToe()
-  const {isPaused,handleReset}=useGame()
-  
-  const [showModal, setShowModal] = useState(false)
-  
-  useEffect(() => {
-    if (winner) {
-      const timer = setTimeout(() => {
-        setShowModal(true)
-      }, 800)
-      return () => clearTimeout(timer)
-    }
-  }, [winner])
-  
+import { Button } from "@/components/ui/button"
+import { useTicTacToe, TicTacToeProvider, PlayerInfo } from "@/context/GamesLogic/TicTacToeContext"
+import { RefreshCw, Trophy, Eye } from "lucide-react"
+import { useGame } from "@/context/GameData/GameContext"
+import Image from 'next/image'
+
+// Reusable PlayerCard Component
+function PlayerCard({ player, isCurrentPlayer }: { player: PlayerInfo, isCurrentPlayer: boolean }) {
+  const symbolColor = player.symbol === 'X' ? 'text-green-400' : 'text-orange-400'
+
   return (
-    <div className="max-h-[80vh] bg-gray-100 dark:bg-black p-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-              <span className="text-gray-700 dark:text-gray-300 font-medium">
-                <span className="font-semibold">Players:</span>
-                <span className={`ml-2 font-bold ${players[0].symbol === 'X' ? 'text-green-400' : 'text-orange-400'}`}>{players[0].name} ({players[0].symbol})</span>
-                <span className="mx-2 text-gray-400 dark:text-gray-500">vs</span>
-                <span className={`font-bold ${players[1].symbol === 'X' ? 'text-green-400' : 'text-orange-400'}`}>{players[1].name} ({players[1].symbol})</span>
-              </span>
-            </div>
-            <span className="text-lg font-semibold text-gray-900 dark:text-white">
-              {getGameStatus()}
-            </span>
-          </div>
+    <div className="flex flex-col items-center gap-4 p-4 transition-all">
+      <div className={`h-[98px] w-[98px] absolute bg-transparent border-2 ${isCurrentPlayer?"animate-spin border-green-500 border-dotted border-b-0":'border-yellow-600'} rounded-full`} />
+      <div className={`transition-all duration-300 rounded-full`}>
+        <Image
+          src={`https://api.dicebear.com/7.x/micah/svg?seed=${player.pic}`}
+          alt={player.name}
+          width={96}
+          height={96}
+          className={`rounded-full border-4 ${isCurrentPlayer ? 'border-card' : 'border-muted'} transition-all duration-300`}
+          priority
+        />
+      </div>
+      <div className="text-center">
+        <h3 className="text-lg font-bold truncate max-w-[150px]">{player.name}</h3>
+        <p className={`text-3xl font-black ${symbolColor}`}>{player.symbol}</p>
+      </div>
+    </div>
+  )
+}
+
+// Main Game Component Logic
+function TicTacToeGameInner() {
+  const { board, currentPlayer, players, winner, winningLine, handleCellClick, getGameStatus, canMove, isAudience,showModal,setShowModal } = useTicTacToe()
+  const { isPaused, handleReset } = useGame()
+
+  const [player1, player2] = players
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[80vh] bg-background text-foreground p-4 sm:p-6">
+      {isAudience && (
+        <div className="w-full max-w-md mb-6 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg flex items-center justify-center gap-2">
+          <Eye className="w-5 h-5 text-blue-400" />
+          <span className="font-medium text-blue-400">You are spectating</span>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
-          <div className="grid grid-cols-3 gap-6 max-w-sm mx-auto py-[3vh]">
+      )}
+      <div className="flex flex-col lg:flex-row items-center justify-around w-full max-w-6xl gap-4 lg:gap-16">
+        <PlayerCard player={player1} isCurrentPlayer={!winner && currentPlayer.symbol === player1.symbol} />
+        <div className="flex flex-col items-center gap-5 my-4 order-first lg:order-none">
+          <div className="p-4 bg-card rounded-xl border w-full text-center shadow-sm">
+            <h2 className="text-xl font-bold tracking-tight">
+              {getGameStatus()}
+            </h2>
+          </div>
+          <div className={`grid grid-cols-3 gap-3 p-4 bg-card rounded-2xl shadow-lg border ${isAudience ? 'pointer-events-none opacity-75' : ''}`}>
             {board.map((cell, index) => (
-              <Button
+              <button
                 key={index}
                 onClick={() => handleCellClick(index)}
                 disabled={isPaused || !!cell || !!winner || !canMove}
-                className={`
-                  aspect-square text-4xl sm:text-5xl font-bold h-20 w-20 sm:h-24 sm:w-24
-                  transition-all duration-200 hover:scale-105 active:scale-95
-                  ${
-                    winningLine.includes(index)
-                      ? "bg-green-400/20 border-2 border-green-400 text-green-400 shadow-lg shadow-green-400/25"
-                      : "bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-600"
-                  }
-                  ${cell === "X" ? "text-green-400" : cell === "O" ? "text-orange-400" : "text-gray-400 dark:text-gray-500"}
-                  ${!cell && !winner && !isPaused ? "hover:shadow-md" : ""}
-                `}
-              >
+                className={`flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 text-5xl sm:text-6xl font-extrabold rounded-lg transition-all -200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 -visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-60 ${winningLine.includes(index) ? "bg-green-400/20 -green-400 scale-105": "bg-muted hover:bg-muted/80"} ${cell === "X" ? "text-green-400" : cell === "O" ? "text-orange-400" : "text-transparent"}${!cell && !winner && canMove && !isPaused ? "hover:scale-105 active:scale-95" : ""}`}>
                 {cell}
-              </Button>
+              </button>
             ))}
           </div>
         </div>
+
+        <PlayerCard player={player2} isCurrentPlayer={!winner && currentPlayer.symbol === player2.symbol} />
       </div>
-      
+
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xl max-w-md w-full mx-4 animate-in fade-in-50 zoom-in-95 duration-300">
-            <div className="p-6 text-center space-y-4">
-              <div className="flex justify-between items-center mb-4">
-                <div className="w-6 h-6"></div>
-                <Trophy className="w-8 h-8 text-yellow-500" />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowModal(false)}
-                  className="w-6 h-6 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-card rounded-xl border shadow-2xl max-w-md w-full mx-4 animate-in fade-in-50 zoom-in-95 duration-300">
+            <div className="p-8 text-center space-y-6">
+              <div className="flex justify-center">
+                <Trophy className="w-12 h-12 text-yellow-500" />
               </div>
-              
+
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  Game Complete!
+                <h2 className="text-3xl font-bold text-foreground">
+                  Game Over
                 </h2>
-                <p className="text-lg text-gray-600 dark:text-gray-300">
+                <p className="text-xl text-muted-foreground">
                   {winner === "Draw" ? (
-                    <span className="text-orange-400">It&apos;s a Draw!</span>
+                    "It's a Draw!"
                   ) : winner ? (
                     <>
-                      <span className={winner.symbol === "X" ? "text-green-400" : "text-orange-400"}>{winner.name} ({winner.symbol})</span> Wins!
+                      <span className={winner.symbol === "X" ? "text-green-400" : "text-orange-400"}>
+                        {winner.name}
+                      </span> wins!
                     </>
                   ) : null}
                 </p>
               </div>
-              
-              <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                <Button 
-                  onClick={()=>{handleReset(); setShowModal(false)}}
-                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white border-0 font-semibold py-2.5 transition-all duration-200 hover:scale-105"
-                >
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Play Again
-                </Button>
-                <Button 
-                  onClick={()=>setShowModal(false)}
-                  variant="outline"
-                  className="flex-1 border-gray-300 dark:border-gray-600 py-2.5 transition-all duration-200 hover:scale-105"
-                >
-                  Close
-                </Button>
-              </div>
+
+              {!isAudience && (
+                <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                  <Button
+                    onClick={() => { handleReset(); setShowModal(false); }}
+                    className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 transition-transform hover:scale-105"
+                  >
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Play Again
+                  </Button>
+                  <Button
+                    onClick={() => setShowModal(false)}
+                    variant="outline"
+                    className="flex-1 py-3 transition-transform hover:scale-105"
+                  >
+                    Close
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -121,6 +121,7 @@ function TicTacToeGameInner() {
   )
 }
 
+// Exported Provider Wrapper
 export function TicTacToeGame() {
   return (
     <TicTacToeProvider>

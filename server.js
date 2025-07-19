@@ -3,6 +3,7 @@ import next from "next";
 import { Server } from "socket.io";
 import "dotenv/config";
 import { handleChatJoin, handleChatMessage, handleChatLeave, handleChatDisconnect } from "./helpers/socketHandler/chatHandlers.js";
+import { handleTicTacToeJoin, handleTicTacToeMove, handleTicTacToeLeave, handleTicTacToeDisconnect, handleTicTacToeReset } from "./helpers/socketHandler/tictactoeHandlers.js";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = process.env.HOST;
@@ -16,15 +17,21 @@ app.prepare().then(() => {
 
   const io = new Server(httpServer);
   
-  const gameMap = new Map();
+  const chatMap = new Map();
   const chathistoryMap=new Map();
+  const gameMap=new Map()
 
   io.on("connection", (socket) => {
-    socket.on("chat:join", (user) => handleChatJoin(io, socket, gameMap, user,chathistoryMap));
+    socket.on("chat:join", (user) => handleChatJoin(io, socket, chatMap, user,chathistoryMap));
     socket.on("chat:message", (msgData) => handleChatMessage(io, msgData,chathistoryMap));
-    socket.on('chat:leave',(data)=>handleChatLeave(io,gameMap,data));
+    socket.on('chat:leave',(data)=>handleChatLeave(io,chatMap,data));
+    socket.on('tictactoe:join', (data) => handleTicTacToeJoin(io, gameMap, data));
+    socket.on('tictactoe:move', (data) => handleTicTacToeMove(io, gameMap, data));
+    socket.on('tictactoe:reset',(data)=>handleTicTacToeReset(io,data,gameMap));
+    socket.on('tictactoe:leave', (data) => handleTicTacToeLeave(io, gameMap, data));
     socket.on('disconnect',()=>{
-      handleChatDisconnect(io,socket,gameMap,chathistoryMap);
+      handleChatDisconnect(io,socket,chatMap,chathistoryMap);
+      handleTicTacToeDisconnect(io, socket, gameMap);
     });
   });
 

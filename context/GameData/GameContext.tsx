@@ -9,6 +9,7 @@ interface GameContextType {
   gameKey: number;
   isFullscreen: boolean;
   liked: boolean | null;
+  canReset:boolean;
   
   // Game actions
   togglePause: () => void;
@@ -18,6 +19,7 @@ interface GameContextType {
   handleDislike: () => void;
   handleShare: (gameName?: string) => void;
   onGameOver: () => void;
+  setCanReset:(value:boolean)=>void;
   containerRef: React.RefObject<HTMLDivElement>;
 }
 
@@ -32,6 +34,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const [gameKey, setGameKey] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [liked, setLiked] = useState<boolean | null>(null);
+  const [canReset,setCanReset]=useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>;
   const pathname=usePathname().slice(6);
 
@@ -41,6 +44,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
   const handleReset = useCallback(() => {
     setGameKey((prev) => prev + 1);
+    setCanReset(true);
     setIsPaused(false);
   }, []);
 
@@ -153,6 +157,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         handleShare,
         onGameOver,
         containerRef,
+        canReset,
+        setCanReset
       }}
     >
       {children}

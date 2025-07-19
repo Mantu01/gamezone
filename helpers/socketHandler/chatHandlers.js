@@ -1,13 +1,13 @@
-export function handleChatJoin(io, socket, gameMap, user,chathistoryMap) {
+export function handleChatJoin(io, socket, chatMap, user,chathistoryMap) {
   const {id,username,pic,roomCode,gameName}=user;
-  if(!gameMap.has(gameName)){
-    gameMap.set(gameName,new Map())
+  if(!chatMap.has(gameName)){
+    chatMap.set(gameName,new Map())
   }
   if(!chathistoryMap.has(gameName)){
     chathistoryMap.set(gameName,new Map())
   }
   const chatRoomMap=chathistoryMap.get(gameName);
-  const roomMap=gameMap.get(gameName)
+  const roomMap=chatMap.get(gameName)
   if(!roomMap.has(roomCode)){
     roomMap.set(roomCode,new Map())
   }
@@ -17,7 +17,7 @@ export function handleChatJoin(io, socket, gameMap, user,chathistoryMap) {
   const allChats=chatRoomMap.get(roomCode)
   const userData={id,socketId:socket.id,username,pic}
   roomMap.get(roomCode).set(id,userData);
-  io.emit(`chat:${gameName}:${roomCode}:users`,[...gameMap.get(gameName).get(roomCode).values()]);
+  io.emit(`chat:${gameName}:${roomCode}:users`,[...chatMap.get(gameName).get(roomCode).values()]);
   io.to(socket.id).emit("chat:history",allChats);
 }
 
@@ -27,9 +27,9 @@ export function handleChatMessage(io, msgData,chathistoryMap) {
   io.emit(`chat:${gameName}:${roomCode}:message`, msg);
 }
 
-export function handleChatLeave(io,gameMap,data){
+export function handleChatLeave(io,chatMap,data){
   const {id,roomCode,gameName}=data; 
-  const roomMap=gameMap.get(gameName)
+  const roomMap=chatMap.get(gameName)
   if(!roomMap)  return ;
   const userMap=roomMap.get(roomCode);
   if(!userMap)  return;
@@ -37,10 +37,10 @@ export function handleChatLeave(io,gameMap,data){
   io.emit(`chat:${gameName}:${roomCode}:users`,[...userMap.values()]);
 }
 
-export function handleChatDisconnect(io, socket, gameMap,chathistoryMap) {
+export function handleChatDisconnect(io, socket, chatMap,chathistoryMap) {
   let foundGame = null;
   let foundRoom = null;
-  for (const [gameName, roomMap] of gameMap) {
+  for (const [gameName, roomMap] of chatMap) {
     for (const [roomCode, usersMap] of roomMap) {
       for (const [userId, userData] of usersMap) {
         if (userData.socketId === socket.id) {
@@ -52,7 +52,7 @@ export function handleChatDisconnect(io, socket, gameMap,chathistoryMap) {
             chathistoryMap.get(gameName).delete(roomCode);
           }
           if (roomMap.size === 0){
-            gameMap.delete(gameName);
+            chatMap.delete(gameName);
             chathistoryMap.delete(gameName);
           }
           break;
@@ -63,7 +63,7 @@ export function handleChatDisconnect(io, socket, gameMap,chathistoryMap) {
     if (foundGame) break;
   }
   if (foundGame && foundRoom) {
-    const roomUsers =gameMap.get(foundGame)?.get(foundRoom) ?? null;
+    const roomUsers =chatMap.get(foundGame)?.get(foundRoom) ?? null;
     io.emit(`chat:${foundGame}:${foundRoom}:users`,roomUsers ? [...roomUsers.values()] : []);
   }
 }
