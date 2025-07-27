@@ -12,7 +12,7 @@ export type PlayerInfo = {
   symbol: 'X' | 'O'
   isBot: boolean,
   pic: string
-  id?: string // <-- add id for online mode
+  id? : string // <-- add id for online mode
 }
 
 type TicTacToeContextType = {
@@ -164,7 +164,7 @@ export const TicTacToeProvider = ({ children }: { children: ReactNode }) => {
   }, [board, currentPlayer, winner, isPaused, players, canMove, playMode, mode, socket, roomCode, gameName, username, difficulty])
 
   const assignPlayers = useCallback(() => {
-    const [player1, player2] = tictactoeClient.getPlayers(username, playMode, mode);
+    const [player1, player2] = tictactoeClient.getPlayers(username, playMode, mode,pic);
     setPlayers([player1, player2])
     setCurrentPlayer(player1)
     setCanMove(true)

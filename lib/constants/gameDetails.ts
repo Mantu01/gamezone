@@ -119,7 +119,7 @@ export const gameDetails:GamesDetails = {
         "Space - Random choice",
       ]
     },
-    singlePlayer: true,
+    singlePlayer: false,
   },
   chess: {
     name: "Cyber Chess",

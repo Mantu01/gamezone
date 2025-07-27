@@ -15,7 +15,13 @@ export const allGames:GameProps[] = [
   {
     id: "tictactoe",
     name: "Tic Tac Toe",
-    description: "Play Tic Tac Toe against a friend or the computer",
+    description: "Play Tic Tac Toe against a friend/computer",
     icon: "❌⭕",
+  },
+  {
+    id:'rps',
+    name:"Rock Papper Scissor",
+    description:"Quick and fun reflex game.",
+    icon:"✂️"
   }
 ]

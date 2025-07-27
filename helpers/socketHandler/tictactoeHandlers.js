@@ -25,7 +25,6 @@ export function handleTicTacToeMove(io, gameMap, data) {
   if (gameState.board[index]) return;
   if ((gameState.player1?.id === id && symbol === 'X') || (gameState.player2?.id === id && symbol === 'O')) {
     gameState.board[index] = symbol;
-    console.log(gameState)
     io.emit(`tictactoe:${gameName}:${roomCode}:sync`, gameState);
   }
 }

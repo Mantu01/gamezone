@@ -68,6 +68,10 @@
   }
 }
 
+.text-shadow-glow {
+  text-shadow: 0 0 8px currentColor;
+}
+
 /* Cyberpunk animations and effects */
 @keyframes neon-glow {
   0%,

@@ -105,19 +105,19 @@ export class TicTacToe {
     return move;
   }
 
-  getPlayers(username:string,playMode:string,mode:string){
+  getPlayers(username:string,playMode:string,mode:string,pic:string){
     const symbol=Math.random()<0.5?"X":"O";
     const player1: PlayerInfo = {
       name: username || 'Player 1',
       symbol: symbol,
       isBot: false,
-      pic:''
+      pic
     }
     const player2: PlayerInfo = {
       name: playMode === 'bot' ? 'Bot' : (mode === 'online' ? 'Opponent' : 'Player 2'),
       symbol:symbol==='X'?'O':'X',
       isBot: playMode === 'bot',
-      pic:''
+      pic:playMode==='bot'?'https://res.cloudinary.com/dqznmhhtv/image/upload/v1752920035/bot_r558jb.png':'2345'
     }
     return [player1,player2]
   }

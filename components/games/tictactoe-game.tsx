@@ -15,7 +15,7 @@ function PlayerCard({ player, isCurrentPlayer }: { player: PlayerInfo, isCurrent
       <div className={`h-[98px] w-[98px] absolute bg-transparent border-2 ${isCurrentPlayer?"animate-spin border-green-500 border-dotted border-b-0":'border-yellow-600'} rounded-full`} />
       <div className={`transition-all duration-300 rounded-full`}>
         <Image
-          src={`https://api.dicebear.com/7.x/micah/svg?seed=${player.pic}`}
+          src={player.isBot?player.pic:`https://api.dicebear.com/7.x/micah/svg?seed=${player.pic}`}
           alt={player.name}
           width={96}
           height={96}
