@@ -88,7 +88,7 @@ export default function HelpPage() {
                     <div>
                       <h3 className="text-green-400 font-bold mb-3">How to Play</h3>
                       <ol className="space-y-2">
-                        {game.instructions.map((instruction, index) => (
+                        {game.instructions.map((instruction:string, index:number) => (
                           <li
                             key={index}
                             className="flex items-start text-gray-300 dark:text-gray-300 light:text-gray-700"
@@ -105,7 +105,7 @@ export default function HelpPage() {
                     <div>
                       <h3 className="text-green-400 font-bold mb-3">Pro Tips</h3>
                       <ul className="space-y-2">
-                        {game.tips.map((tip, index) => (
+                        {game.tips.map((tip:string, index:number) => (
                           <li
                             key={index}
                             className="flex items-start text-gray-300 dark:text-gray-300 light:text-gray-700"

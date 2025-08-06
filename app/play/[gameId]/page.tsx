@@ -2,7 +2,7 @@
 
 import { useRouter, useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { ArrowLeft } from "lucide-react"
 import Loading from "@/components/wraper/Loading"
 import { useUser } from "@/context/GameData/UserContext"

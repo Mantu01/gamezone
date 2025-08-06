@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Users, Wifi, WifiOff, Eye, EyeOff, Send, MoreVertical, Smile, MicOff, Mic, VolumeX, Volume2 } from "lucide-react";
+import { Users, Wifi, WifiOff, Eye, EyeOff, Send, MicOff, Mic, VolumeX, Volume2 } from "lucide-react";
 import { useUser } from "@/context/GameData/UserContext";
 import { MessageProvider, useMessageContext } from "@/context/Socket/MessageContext";
 import Image from "next/image";

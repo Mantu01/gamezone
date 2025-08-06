@@ -207,7 +207,7 @@ function RPSGameContainer() {
 
   const [player1, player2] = players;
   // Hide choices during countdown
-  let shouldHideChoices = gamePhase === 'countdown';
+  const shouldHideChoices = gamePhase === 'countdown';
   let displayChoice1 = shouldHideChoices ? null : player1.choice;
   let displayChoice2 = shouldHideChoices ? null : player2.choice;
   if (isObserver && shouldHideChoices) {
