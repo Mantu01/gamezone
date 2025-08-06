@@ -22,11 +22,9 @@ type RPS = {
   gamePhase: Phase,
   isAnimating: boolean,
   players: [RpsPlayerInfo, RpsPlayerInfo],
-  
-  // Timer state
   countdown: number,
   isCountdownActive: boolean,
-  roundStartTime: number | null,
+  isObserver: boolean,
   
   // Actions
   playRound: (val: Choice) => void,
@@ -44,7 +42,6 @@ export const choices = {
   scissors: { emoji: "✂️", name: "Scissors", gradient: "from-red-400 to-red-600" },
 }
 
-// Keyboard mappings
 const KEY_MAPPINGS = {
   // Player 1 keys
   'a': 'rock',
@@ -73,7 +70,7 @@ export function RpsProvider({ children }: { children: ReactNode }) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [countdown, setCountdown] = useState(3);
   const [isCountdownActive, setIsCountdownActive] = useState(false);
-  const [roundStartTime, setRoundStartTime] = useState<number | null>(null);
+  const [isObserver, setIsObserver] = useState(false);
 
   // Timer refs
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -100,7 +97,6 @@ export function RpsProvider({ children }: { children: ReactNode }) {
       } else if (playMode === 'bot') {
         props.u2 = 'computer';
       }
-    } else if (mode === 'online') {
     }
 
     assignPlayers(props);
@@ -252,7 +248,7 @@ export function RpsProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      setRound(prev => prev + 1);
+      setRound(round+1);
     }, 1000);
   }, [playMode, players]);
 
@@ -268,40 +264,38 @@ export function RpsProvider({ children }: { children: ReactNode }) {
     setCountdown(3);
   }, []);
 
-  // Online mode socket handlers (placeholder for future extension)
+  // Online mode socket handlers (robust join/sync/leave)
   useEffect(() => {
-    if (mode === 'online' && socket && roomCode && gameName) {
-      // Join the game room
-      socket.emit('rps:join', {
-        roomCode,
-        gameName,
-        user: { id, username, pic }
-      });
+    if (mode === 'online' && socket && roomCode && gameName && id) {
+      socket.emit('rps:join', { roomCode, gameName, user: { id, name: username, pic } });
 
-      // Listen for game state updates
-      socket.on(`rps:${gameName}:${roomCode}:sync`, (gameState: any) => {
+      const syncHandler = (gameState: any) => {
         setPlayers([
           {
             name: gameState.player1?.name || '',
             pic: gameState.player1?.pic || '',
             choice: gameState.player1?.choice || null,
-            score: gameState.player1?.score || 0
+            score: gameState.player1?.score || 0,
           },
           {
             name: gameState.player2?.name || '',
             pic: gameState.player2?.pic || '',
             choice: gameState.player2?.choice || null,
-            score: gameState.player2?.score || 0
-          }
+            score: gameState.player2?.score || 0,
+          },
         ]);
         setGamePhase(gameState.gamePhase);
         setResult(gameState.result);
         setIsAnimating(gameState.isAnimating);
         setRound(gameState.round);
-      });
+        setCountdown(gameState.countdown || 3);
+        setIsCountdownActive(gameState.isCountdownActive || false);
+        setIsObserver(!!gameState.isObserver);
+      };
+      socket.on(`rps:${gameName}:${roomCode}:sync`, syncHandler);
 
       return () => {
-        socket.off(`rps:${gameName}:${roomCode}:sync`);
+        socket.off(`rps:${gameName}:${roomCode}:sync`, syncHandler);
         socket.emit('rps:leave', { roomCode, gameName, id });
       };
     }
@@ -378,7 +372,6 @@ export function RpsProvider({ children }: { children: ReactNode }) {
       players,
       countdown,
       isCountdownActive,
-      roundStartTime,
       nextRound,
       getResultColor,
       playRound,
@@ -386,6 +379,7 @@ export function RpsProvider({ children }: { children: ReactNode }) {
       makeChoice,
       handleKeyPress,
       startNewRound,
+      isObserver,
     }}>
       {children}
     </rpsContext.Provider>

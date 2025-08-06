@@ -193,6 +193,7 @@ function RPSGameContainer() {
     resetGame,
     getResultColor,
     makeChoice,
+    isObserver,
   } = useRPS();
 
   const { mode, playMode } = useGameMode();
@@ -206,9 +207,13 @@ function RPSGameContainer() {
 
   const [player1, player2] = players;
   // Hide choices during countdown
-  const shouldHideChoices = gamePhase === 'countdown';
-  const displayChoice1 = shouldHideChoices ? null : player1.choice;
-  const displayChoice2 = shouldHideChoices ? null : player2.choice;
+  let shouldHideChoices = gamePhase === 'countdown';
+  let displayChoice1 = shouldHideChoices ? null : player1.choice;
+  let displayChoice2 = shouldHideChoices ? null : player2.choice;
+  if (isObserver && shouldHideChoices) {
+    displayChoice1 = null;
+    displayChoice2 = null;
+  }
   const isMyTurn = mode === "online" && gamePhase === 'choosing' && player1.choice === null;
 
   const handleChoice = (choice: ChoiceButtonType) => {
@@ -248,12 +253,17 @@ function RPSGameContainer() {
   };
 
   const playerNames = getPlayerNames();
-  const shouldShowChoiceButtons = playMode === "bot" || mode === "online";
-  const isChoiceButtonDisabled = isAnimating || gamePhase === 'waiting' || gamePhase === 'countdown' || (mode === "online" && !isMyTurn);
+  const shouldShowChoiceButtons = (playMode === "bot" || mode === "online") && !isObserver;
+  const isChoiceButtonDisabled = isObserver || isAnimating || gamePhase === 'waiting' || gamePhase === 'countdown' || (mode === "online" && !isMyTurn);
 
   return (
     <div className="min-h-[90vh] bg-gradient-to-br from-orange-50 to-green-50 dark:from-gray-900 dark:to-gray-800 px-4 flex items-center justify-center">
       <div className="w-full max-w-4xl mx-auto space-y-6">
+        {isObserver && (
+          <div className="bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-200 rounded-xl shadow-lg p-4 text-center font-semibold">
+            👀 You are observing this game
+          </div>
+        )}
         <GameModeHeader playMode={playMode} round={round} player1Name={player1.name || playerNames.player1} player2Name={player2.name || playerNames.player2} />
 
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-6">

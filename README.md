@@ -1,116 +1,107 @@
 # GameZone
 
-A real-time multiplayer gaming platform with voice chat capabilities and enhanced Rock Paper Scissors game.
+A real-time multiplayer gaming platform with voice chat, modern UI, and a suite of classic and enhanced games.
 
-## Enhanced Rock Paper Scissors Game
+## 🎮 Available Games
 
-### Game Modes
+### 1. Cyber Snake
+- **Navigate a neon snake through digital mazes**
+- **Eat data packets to grow, avoid walls and your tail**
+- **Features:** Neon graphics, power-ups, high scores, increasing speed
+- **Controls:** Arrow keys or WASD
+- **Modes:** Single player
 
-#### Offline Multiplayer Mode
-- **Two players on the same device**
-- **Player 1 Controls**: A (Rock), S (Paper), D (Scissors)
-- **Player 2 Controls**: J (Rock), K (Paper), L (Scissors)
-- **3-second countdown timer** after both players make selections
-- **Simultaneous reveal** of both choices
-- **Real-time score tracking**
+### 2. Tic Tac Toe
+- **Classic grid game with AI and multiplayer**
+- **Play against friends, AI, or online**
+- **Features:** Single player, multiplayer, AI opponent, custom difficulty, online support
+- **Controls:** Click to place X or O
+- **Modes:** Single player, local multiplayer, online multiplayer
 
-#### Offline AI Mode
-- **Player vs Computer**
-- **Player Controls**: A (Rock), S (Paper), D (Scissors) or click buttons
-- **AI randomly selects** moves
-- **3-second countdown timer** after player selection
-- **Simultaneous reveal** of choices
-- **Score tracking** for both player and AI
+### 3. Rock Paper Scissors (RPS)
+- **Enhanced RPS with animated results and score tracking**
+- **Play against AI, friends locally, or online**
+- **Features:** AI opponent, best-of series, score tracking, animated results, observer mode
+- **Controls:**
+  - Player 1: A (Rock), S (Paper), D (Scissors)
+  - Player 2: J (Rock), K (Paper), L (Scissors)
+  - Or click/tap buttons
+- **Modes:**
+  - Local multiplayer (same device)
+  - AI mode (vs computer)
+  - Online multiplayer (with observer support)
 
-#### Online Mode (Placeholder)
-- **Structured for future online multiplayer implementation**
-- **Socket-based real-time gameplay**
-- **Room-based matchmaking system**
+## 🗣️ Real-Time Voice Chat
+- **WebRTC-based peer-to-peer audio**
+- **Automatic voice room for each game**
+- **Mic and speaker controls, connection status, error handling**
+- **Works in all modern browsers**
 
-### Key Features
-- **Keyboard input handling** with visual feedback
-- **Countdown timer** with animated display
-- **Clean state management** using React Context
-- **Responsive UI** with modern design
-- **Game phase management** (choosing, countdown, revealing, result)
-- **Score persistence** across rounds
-- **Visual animations** and transitions
+## 👀 Observer Mode
+- **Online RPS supports unlimited observers**
+- **Observers can watch the game in real time but cannot play**
+- **During countdown, only your own choice is visible; observers see neither**
 
-### Technical Implementation
-- **React Context API** for state management
-- **Custom hooks** for game logic
-- **Keyboard event listeners** for input handling
-- **Timer management** with cleanup
-- **Socket.IO integration** for online mode
-- **TypeScript** for type safety
+## 🚀 Getting Started
 
-## Features
+### 1. Install dependencies
+```bash
+npm install
+```
 
-### Real-Time Voice Chat
-- **WebRTC-based voice communication** for low-latency audio
-- **Automatic peer-to-peer connections** between users in the same game room
-- **Mic and speaker controls** with visual indicators
-- **Real-time connection status** showing voice activity
-- **Automatic cleanup** when users leave or disconnect
-- **Error handling** for microphone permissions and connection issues
+### 2. Development server
+```bash
+npm run dev
+```
+- Runs the Next.js frontend on the default port (usually 3000)
+- For full-stack (with custom server and sockets):
+```bash
+npm run start:dev
+```
+- This uses `nodemon` to run `server.js` (custom Node.js + Socket.IO + Next.js server)
 
-### Voice Controls
-- **Microphone toggle**: Mute/unmute your microphone
-- **Speaker toggle**: Mute/unmute incoming audio from other users
-- **Connection status**: Visual indicator showing if voice is active
-- **Error messages**: Clear feedback for permission and connection issues
+### 3. Production build
+```bash
+npm run build
+npm start
+```
+- `npm start` runs `server.js` in production mode
 
-### Technical Implementation
-- **WebRTC Peer Connections**: Direct peer-to-peer audio streaming
-- **Socket.IO signaling**: Handles WebRTC offer/answer exchange
-- **STUN servers**: Google and Twilio STUN servers for NAT traversal
-- **Audio optimization**: Echo cancellation, noise suppression, and auto gain control
-- **Automatic reconnection**: Handles network disconnections gracefully
+### 4. Environment variables
+- Create a `.env` file in the root (see `.env.example` if available)
+- Required:
+  - `HOST` (e.g. localhost)
+  - `PORT` (e.g. 3000)
 
-## Getting Started
-
-1. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-2. **Start the development server**:
-   ```bash
-   npm run dev
-   ```
-
-3. **Allow microphone permissions** when prompted for voice chat
-
-4. **Join a game room** and start chatting with voice!
-
-## Voice Chat Usage
-
-1. **Join a game room** - Voice chat automatically initializes
-2. **Use the mic button** to mute/unmute your microphone
-3. **Use the speaker button** to mute/unmute incoming audio
-4. **Check the voice status indicator** to see connection state
-5. **Voice works automatically** with other users in the same room
-
-## Browser Support
-
-Voice chat requires a modern browser with WebRTC support:
+## 🌐 Browser Support
 - Chrome 60+
 - Firefox 55+
 - Safari 11+
 - Edge 79+
 
-## Troubleshooting
+## 🛠️ Troubleshooting
+- **Microphone not working:** Check browser permissions and hardware
+- **No audio from others:** Check speaker settings and browser audio permissions
+- **Connection issues:** Check internet/firewall
+- **Game not syncing:** Refresh, or check server logs
+- **Voice not connecting:** Ensure all users are in the same room
 
-- **Microphone not working**: Check browser permissions and ensure microphone is connected
-- **No audio from others**: Check speaker settings and browser audio permissions
-- **Connection issues**: Check internet connection and firewall settings
-- **Voice not connecting**: Ensure you're in the same game room as other users
+## 📚 Help & FAQ
+- See the `/help` page in the app for detailed guides and pro tips for each game
+- For 50+ common questions and answers, see [FAQ.md](./FAQ.md)
 
-# React + Vite
+## 🏗️ Project Structure
+- `components/` — React UI components
+- `context/` — React context providers for game logic and state
+- `helpers/` — Server-side game and socket logic
+- `lib/constants/` — Game metadata, instructions, and tips
+- `app/` — Next.js app directory (routes, pages, layouts)
+- `public/` — Static assets (audio, images)
+- `server.js` — Custom Node.js + Socket.IO + Next.js server
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🧑‍💻 Contributing
+- PRs and issues welcome! See the code, try the games, and suggest improvements.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Enjoy GameZone — the cyber arcade for everyone!**

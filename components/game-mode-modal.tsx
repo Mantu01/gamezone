@@ -48,6 +48,9 @@ export function GameModeModal() {
 
   const [step, setStep] = useState(0)
 
+  // Get current game details
+  const currentGame = gameDetails[gameId as keyof typeof gameDetails]
+
   const handleClose = () => {
     closeModal()
     setStep(0)
@@ -113,14 +116,32 @@ export function GameModeModal() {
           <div className="space-y-6 mt-4">
             <h3 className="text-green-400  text-sm uppercase tracking-wider text-center">Select Connection Type</h3>
             <div className="space-y-4">
-              <Card className="bg-black/50 border-orange-500 hover:border-orange-500 transition-all cursor-pointer"
-                    onClick={() => { setMode("online"); setStep(1); }}>
+              <Card 
+                className={`bg-black/50 transition-all cursor-pointer ${
+                  currentGame?.onlineSupport 
+                    ? 'border-orange-500 hover:border-orange-500' 
+                    : 'border-gray-500 opacity-50 cursor-not-allowed'
+                }`}
+                onClick={() => { 
+                  if (currentGame?.onlineSupport) {
+                    setMode("online"); 
+                    setStep(1);
+                  }
+                }}
+              >
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-3">
-                    <Wifi className="w-6 h-6 text-orange-400" />
+                    <Wifi className={`w-6 h-6 ${currentGame?.onlineSupport ? 'text-orange-400' : 'text-gray-500'}`} />
                     <div>
-                      <h4 className=" font-bold text-orange-400">ONLINE</h4>
-                      <p className="text-xs text-orange-300 ">Play with friends over the internet</p>
+                      <h4 className={`font-bold ${currentGame?.onlineSupport ? 'text-orange-400' : 'text-gray-500'}`}>
+                        ONLINE
+                      </h4>
+                      <p className={`text-xs ${currentGame?.onlineSupport ? 'text-orange-300' : 'text-gray-500'}`}>
+                        {currentGame?.onlineSupport 
+                          ? 'Play with friends over the internet' 
+                          : 'Online mode not available for this game'
+                        }
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -147,7 +168,45 @@ export function GameModeModal() {
 
   // Step 1: Local submode selection
   if (step === 1 && mode === "local") {
-    const supportsSinglePlayer = gameDetails[gameId as keyof typeof gameDetails]?.singlePlayer;
+    const supportsSinglePlayer = currentGame?.singlePlayer;
+    const supportsMultiplayer = currentGame?.multiplayerSupport;
+    const supportsAI = currentGame?.aiSupport;
+    
+    // Check if any play modes are available
+    const hasAvailableModes = supportsSinglePlayer || supportsMultiplayer || supportsAI;
+    
+    if (!hasAvailableModes) {
+      return (
+        <Dialog open={isOpen} onOpenChange={handleClose}>
+          <DialogContent className="border-red-500/50 bg-black/90 backdrop-blur-sm max-w-md p-6">
+            <DialogHeader>
+              <DialogTitle className="text-red-400 text-center text-2xl font-bold tracking-wider">
+                {gameName}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <h3 className="text-red-400 text-sm uppercase tracking-wider text-center">No Play Modes Available</h3>
+              <Card className="bg-black/50 border-red-500/30">
+                <CardContent className="p-6 text-center">
+                  <p className="text-red-300 text-sm">
+                    This game does not support any local play modes at the moment.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+            <Button 
+              onClick={handleBack} 
+              variant="ghost" 
+              className="mt-4 text-red-400 hover:text-red-300"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              BACK
+            </Button>
+          </DialogContent>
+        </Dialog>
+      )
+    }
+    
     return (
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="border-green-500/50 bg-black/90 backdrop-blur-sm max-w-md p-6">
@@ -174,27 +233,63 @@ export function GameModeModal() {
                 </Card>
               )}
               
-              <Card className="bg-black/50 border-green-500/30 hover:border-green-500/60 transition-all cursor-pointer"
-                    onClick={() => { setPlayMode("multiplayer"); setStep(3); }}>
+              <Card 
+                className={`bg-black/50 transition-all cursor-pointer ${
+                  supportsMultiplayer 
+                    ? 'border-green-500/30 hover:border-green-500/60' 
+                    : 'border-gray-500 opacity-50 cursor-not-allowed'
+                }`}
+                onClick={() => { 
+                  if (supportsMultiplayer) {
+                    setPlayMode("multiplayer"); 
+                    setStep(3);
+                  }
+                }}
+              >
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-3">
-                    <Users className="w-6 h-6 text-green-400" />
+                    <Users className={`w-6 h-6 ${supportsMultiplayer ? 'text-green-400' : 'text-gray-500'}`} />
                     <div>
-                      <h4 className=" font-bold text-green-400">MULTIPLAYER</h4>
-                      <p className="text-xs text-green-300/70 ">Play with friends on same device</p>
+                      <h4 className={`font-bold ${supportsMultiplayer ? 'text-green-400' : 'text-gray-500'}`}>
+                        MULTIPLAYER
+                      </h4>
+                      <p className={`text-xs ${supportsMultiplayer ? 'text-green-300/70' : 'text-gray-500'}`}>
+                        {supportsMultiplayer 
+                          ? 'Play with friends on same device' 
+                          : 'Multiplayer not available for this game'
+                        }
+                      </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
               
-              <Card className="bg-black/50 border-orange-500/30 hover:border-orange-500/60 transition-all cursor-pointer"
-                    onClick={() => { setPlayMode("bot"); setStep(2); }}>
+              <Card 
+                className={`bg-black/50 transition-all cursor-pointer ${
+                  supportsAI 
+                    ? 'border-orange-500/30 hover:border-orange-500/60' 
+                    : 'border-gray-500 opacity-50 cursor-not-allowed'
+                }`}
+                onClick={() => { 
+                  if (supportsAI) {
+                    setPlayMode("bot"); 
+                    setStep(2);
+                  }
+                }}
+              >
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-3">
-                    <Bot className="w-6 h-6 text-orange-400" />
+                    <Bot className={`w-6 h-6 ${supportsAI ? 'text-orange-400' : 'text-gray-500'}`} />
                     <div>
-                      <h4 className=" font-bold text-orange-400">Play with AI</h4>
-                      <p className="text-xs text-orange-300/70 ">Challenge our intelligent bot</p>
+                      <h4 className={`font-bold ${supportsAI ? 'text-orange-400' : 'text-gray-500'}`}>
+                        Play with AI
+                      </h4>
+                      <p className={`text-xs ${supportsAI ? 'text-orange-300/70' : 'text-gray-500'}`}>
+                        {supportsAI 
+                          ? 'Challenge our intelligent bot' 
+                          : 'AI mode not available for this game'
+                        }
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -325,6 +420,39 @@ export function GameModeModal() {
 
   // Step 1: Online submode
   if (step === 1 && mode === "online") {
+    // Check if online mode is available
+    if (!currentGame?.onlineSupport) {
+      return (
+        <Dialog open={isOpen} onOpenChange={handleClose}>
+          <DialogContent className="border-red-500/50 bg-black/90 backdrop-blur-sm max-w-md p-6">
+            <DialogHeader>
+              <DialogTitle className="text-red-400 text-center text-2xl font-bold tracking-wider">
+                {gameName}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <h3 className="text-red-400 text-sm uppercase tracking-wider text-center">Online Mode Not Available</h3>
+              <Card className="bg-black/50 border-red-500/30">
+                <CardContent className="p-6 text-center">
+                  <p className="text-red-300 text-sm">
+                    This game does not support online multiplayer at the moment.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+            <Button 
+              onClick={handleBack} 
+              variant="ghost" 
+              className="mt-4 text-red-400 hover:text-red-300"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              BACK
+            </Button>
+          </DialogContent>
+        </Dialog>
+      )
+    }
+    
     return (
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="border-orange-500/50 bg-black/90 backdrop-blur-sm max-w-md p-6">
