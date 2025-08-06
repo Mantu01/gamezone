@@ -1,5 +1,10 @@
 export function handleChatJoin(io, socket, chatMap, user,chathistoryMap) {
   const {id,username,pic,roomCode,gameName}=user;
+  
+  // Store game info on socket for voice cleanup
+  socket.gameName = gameName;
+  socket.roomCode = roomCode;
+  
   if(!chatMap.has(gameName)){
     chatMap.set(gameName,new Map())
   }

@@ -17,40 +17,70 @@ function ChatContent() {
   const { connected } = useSocket();
   const { theme } = useTheme();
   const {messages,newMessage,setNewMessage,connectedUsers,showUserList,setShowUserList,sendMessage,messagesEndRef} = useMessageContext();
-  const {isMicOff,isSpeakerOff,toggleMic,toggleSpeaker}=useGroupAudio();
+  const {isMicOff,isSpeakerOff,toggleMic,toggleSpeaker,isVoiceConnected,voiceError,clearVoiceError}=useGroupAudio();
 
   const isDark = theme === 'dark';
 
   return (
     <Card className={`cyber-card flex flex-col h-[70vh] relative overflow-hidden shadow-2xl shadow-orange-400/10 backdrop-blur-sm`}>
       <div className={`p-4 border-b backdrop-blur-sm`}>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={toggleMic}
-          className={`transition-all duration-200 hover:scale-105 ${
-            isMicOff 
-              ? 'text-red-400 hover:bg-red-400/20' 
-              : 'text-green-400 hover:bg-green-400/20'
-          }`}
-          title={isMicOff ? "Unmute microphone" : "Mute microphone"}
-        >
-          {isMicOff ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-        </Button>
-        
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={toggleSpeaker}
-          className={`transition-all duration-200 hover:scale-105 ${
-            isSpeakerOff 
-              ? 'text-red-400 hover:bg-red-400/20' 
-              : 'text-green-400 hover:bg-green-400/20'
-          }`}
-          title={isSpeakerOff ? "Unmute speaker" : "Mute speaker"}
-        >
-          {isSpeakerOff ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-        </Button>
+        <div className="flex items-center space-x-2 mb-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleMic}
+            className={`transition-all duration-200 hover:scale-105 ${
+              isMicOff 
+                ? 'text-red-400 hover:bg-red-400/20' 
+                : 'text-green-400 hover:bg-green-400/20'
+            }`}
+            title={isMicOff ? "Unmute microphone" : "Mute microphone"}
+          >
+            {isMicOff ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+          </Button>
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleSpeaker}
+            className={`transition-all duration-200 hover:scale-105 ${
+              isSpeakerOff 
+                ? 'text-red-400 hover:bg-red-400/20' 
+                : 'text-green-400 hover:bg-green-400/20'
+            }`}
+            title={isSpeakerOff ? "Unmute speaker" : "Mute speaker"}
+          >
+            {isSpeakerOff ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </Button>
+          
+          {/* Voice connection status */}
+          <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-mono ${
+            isVoiceConnected 
+              ? 'text-green-400 bg-green-400/10 border border-green-400/20' 
+              : 'text-gray-400 bg-gray-400/10 border border-gray-400/20'
+          }`}>
+            <div className={`w-2 h-2 rounded-full ${
+              isVoiceConnected ? 'bg-green-400 animate-pulse' : 'bg-gray-400'
+            }`} />
+            <span>{isVoiceConnected ? 'Voice Active' : 'Voice Inactive'}</span>
+          </div>
+        </div>
+
+        {/* Voice error message */}
+        {voiceError && (
+          <div className="mb-3 p-2 bg-red-400/10 border border-red-400/30 rounded-lg text-red-400 text-xs font-mono flex items-center justify-between">
+            <span>{voiceError}</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearVoiceError}
+              className="text-red-400 hover:bg-red-400/20 p-1 h-auto"
+            >
+              ×
+            </Button>
+          </div>
+        )}
+
         <div className="flex items-center justify-between">
           <div className="flex items-center text-orange-500">
             <div className={`relative p-2 rounded-lg`}>
